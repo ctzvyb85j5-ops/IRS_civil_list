@@ -1,0 +1,3084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#efbb88">
+<title>IRS Civil List</title>
+<style>
+:root {
+  --ink: #122033; --muted: #617187; --line: #d3dbe6;
+  --paper: #ecdfcf; --panel: rgba(255, 248, 239, 0.92);
+  --accent: #113a62; --accent-soft: #dce8f6;
+  --success: #21714f; --success-soft: #dff4ea;
+  --warn: #8a5d18; --warn-soft: #f8efd9;
+  --danger: #8b2e2e; --danger-soft: #f8dfdf;
+  --sidebar-grad-1: #f3c79e; --sidebar-grad-2: #efbb88;
+  --sidebar-ink: #5a3f22; --heading-ink: #5f371a;
+  --subheading-ink: #7a573d; --eyebrow-ink: #8c7057;
+  --panel-border: rgba(171, 132, 88, 0.24);
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; }
+body { font-family: "Segoe UI Variable", "Trebuchet MS", -apple-system, BlinkMacSystemFont, sans-serif; background: var(--paper); color: var(--ink); font-size: 16px; line-height: 1.5; min-height: 100vh; }
+.shell { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
+.sidebar { background: linear-gradient(180deg, var(--sidebar-grad-1) 0%, var(--sidebar-grad-2) 100%); color: var(--sidebar-ink); padding: 24px 14px; border-right: 1px solid var(--panel-border); position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+.sidebar h1 { font-family: Georgia, "Times New Roman", serif; font-size: 1.25rem; margin: 0 0 4px; color: var(--heading-ink); }
+.sidebar .tagline { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--eyebrow-ink); margin-bottom: 24px; }
+.nav { display: flex; flex-direction: column; gap: 6px; }
+.nav a { display: flex; align-items: center; gap: 10px; padding: 14px; border-radius: 12px; color: var(--sidebar-ink); text-decoration: none; font-weight: 800; font-size: 0.95rem; cursor: pointer; min-height: 44px; }
+.nav a:active, .nav a:hover { background: rgba(0,0,0,0.10); }
+.nav a.active { background: rgba(0,0,0,0.14); }
+.nav .icon { display: inline-block; width: 22px; text-align: center; font-size: 1.1rem; }
+.nav .lock-icon { font-size: 0.75rem; margin-left: auto; }
+.sidebar .source-note { margin-top: 28px; padding: 12px; font-size: 0.78rem; color: var(--eyebrow-ink); border-top: 1px solid var(--panel-border); line-height: 1.55; }
+.mobile-topbar { display: none; background: linear-gradient(180deg, var(--sidebar-grad-1) 0%, var(--sidebar-grad-2) 100%); padding: 12px 16px; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; border-bottom: 1px solid var(--panel-border); }
+.mobile-topbar h1 { font-family: Georgia, serif; font-size: 1.15rem; margin: 0; color: var(--heading-ink); }
+.menu-btn { background: rgba(0,0,0,0.14); border: none; width: 42px; height: 42px; border-radius: 10px; font-size: 1.4rem; color: var(--sidebar-ink); cursor: pointer; }
+.mobile-drawer { display: none; background: linear-gradient(180deg, var(--sidebar-grad-1) 0%, var(--sidebar-grad-2) 100%); padding: 8px 16px 16px; border-bottom: 1px solid var(--panel-border); }
+.mobile-drawer.open { display: block; }
+.main { padding: 30px; overflow-x: hidden; min-width: 0; }
+.panel { background: var(--panel); border: 1px solid var(--panel-border); border-radius: 20px; padding: 24px; box-shadow: 0 16px 32px rgba(17, 58, 98, 0.08); margin-bottom: 24px; }
+.panel-title-block { text-align: center; margin-bottom: 28px; }
+.panel-title-block .eyebrow { font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--eyebrow-ink); margin-bottom: 8px; }
+.panel-title-block h2 { font-family: Georgia, serif; color: var(--heading-ink); font-weight: 700; font-size: 2.3rem; margin: 0 0 6px; line-height: 1.2; }
+.panel-title-block .subtitle { font-family: Georgia, serif; color: var(--subheading-ink); font-size: 1.15rem; }
+.stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 24px; }
+.stat-card { background: var(--panel); border: 1px solid var(--panel-border); border-radius: 16px; padding: 22px; }
+.stat-card .label { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 700; margin-bottom: 10px; }
+.stat-card .value { font-size: 2rem; font-weight: 700; color: var(--accent); line-height: 1; }
+.stat-card .detail { font-size: 0.85rem; color: var(--muted); margin-top: 6px; }
+.grade-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+.grade-card { background: var(--panel); border: 1px solid var(--panel-border); border-radius: 14px; padding: 16px; text-align: center; }
+.grade-card .label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 700; margin-bottom: 6px; }
+.grade-card .value { font-size: 1.6rem; font-weight: 700; color: var(--accent); }
+.section-heading { font-family: Georgia, serif; color: var(--heading-ink); font-size: 1.3rem; font-weight: 700; margin: 24px 0 14px; }
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table.officer-table { width: 100%; border-collapse: collapse; font-size: 0.92rem; min-width: 640px; }
+table.officer-table th { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 700; text-align: left; padding: 14px 10px; border-bottom: 2px solid var(--line); background: rgba(0,0,0,0.03); cursor: pointer; white-space: nowrap; }
+table.officer-table td { padding: 12px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+table.officer-table tr:hover td { background: rgba(0,0,0,0.02); }
+.badge { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; white-space: nowrap; }
+.badge-deputation { background: var(--warn-soft); color: var(--warn); }
+.badge-retired { background: var(--danger-soft); color: var(--danger); }
+.badge-soon { background: #fff1cd; color: #9a6a16; }
+.search-row { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+.search-row input, .search-row select { padding: 12px 14px; border-radius: 10px; border: 1px solid var(--line); background: white; font-size: 16px; font-family: inherit; flex: 1 1 220px; min-width: 200px; }
+.button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 12px 16px; border-radius: 12px; background: #e8edf3; color: var(--ink); border: none; font-size: 0.92rem; font-weight: 600; cursor: pointer; font-family: inherit; min-height: 44px; }
+.button:hover { background: #d8dfe8; }
+.button-primary { background: linear-gradient(135deg, var(--accent), #0d2d4b); color: white; }
+.button-danger { background: linear-gradient(135deg, #7c2d12, #9f3a1c); color: white; }
+.button-success { background: linear-gradient(135deg, #1f6f4e, #144c37); color: white; }
+.form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 20px; }
+.form-grid.compact { grid-template-columns: repeat(3, 1fr); }
+.form-field label { display: block; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 700; margin-bottom: 6px; }
+.form-field input, .form-field select, .form-field textarea { width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line); background: white; font-family: inherit; font-size: 16px; color: var(--ink); }
+.form-field input[type="color"] { padding: 4px; height: 46px; }
+.form-field textarea { min-height: 70px; resize: vertical; }
+.form-field .help { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
+.chip-group { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { padding: 10px 14px; border-radius: 999px; border: 1px solid var(--line); background: white; cursor: pointer; font-size: 0.85rem; font-weight: 600; color: var(--ink); font-family: inherit; }
+.chip.active { background: var(--accent); color: white; border-color: var(--accent); }
+.actions-bar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.detail-card { background: var(--panel); border: 1px solid var(--panel-border); border-radius: 16px; padding: 24px; margin-bottom: 16px; }
+.detail-card h3 { font-family: Georgia, serif; color: var(--heading-ink); margin: 0 0 4px; font-size: 1.4rem; }
+.detail-card .sub { color: var(--muted); font-size: 0.92rem; margin-bottom: 18px; }
+.detail-rows { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.detail-row { display: flex; flex-direction: column; gap: 4px; }
+.detail-row .k { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 700; }
+.detail-row .v { font-size: 0.98rem; color: var(--ink); font-weight: 600; }
+.notes-area { margin-top: 18px; border-top: 1px solid var(--line); padding-top: 16px; }
+.notes-area label { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 700; }
+.notes-area textarea { width: 100%; margin-top: 8px; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line); font-family: inherit; font-size: 16px; min-height: 80px; }
+.results-count { color: var(--muted); font-size: 0.88rem; margin: 8px 0 16px; }
+.empty-state { text-align: center; padding: 40px 20px; color: var(--muted); }
+.empty-state .ico { font-size: 2.5rem; margin-bottom: 12px; }
+.view { display: none; }
+.view.active { display: block; }
+.struck { text-decoration: line-through; color: var(--muted); }
+.banner { background: var(--warn-soft); border: 1px solid #e8d4a0; border-radius: 12px; padding: 14px 18px; color: #6e4914; font-size: 0.9rem; margin-bottom: 20px; }
+.banner.success { background: var(--success-soft); border-color: #b7d8c5; color: #1a5a3f; }
+.banner.danger { background: var(--danger-soft); border-color: #e0b6b6; color: #7a2424; }
+.subtab-bar { display: flex; gap: 4px; border-bottom: 2px solid var(--line); margin-bottom: 20px; flex-wrap: wrap; }
+.subtab { padding: 12px 18px; cursor: pointer; border: none; background: transparent; font-size: 0.95rem; font-weight: 600; color: var(--muted); font-family: inherit; border-bottom: 3px solid transparent; margin-bottom: -2px; }
+.subtab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.subview { display: none; }
+.subview.active { display: block; }
+.grade-row { display: grid; grid-template-columns: 1fr 80px 80px 80px; gap: 8px; align-items: center; margin-bottom: 8px; padding: 8px; background: white; border: 1px solid var(--line); border-radius: 10px; }
+.grade-row input { padding: 8px 10px; }
+.gr-btn { padding: 8px; min-height: 36px; }
+.warn-box { background: var(--warn-soft); border: 1px solid #e8d4a0; border-radius: 10px; padding: 14px 16px; color: #6e4914; font-size: 0.88rem; margin: 12px 0; }
+.upload-zone { border: 2px dashed var(--line); border-radius: 16px; padding: 32px; text-align: center; background: white; cursor: pointer; }
+.upload-zone.dragover { border-color: var(--accent); background: var(--accent-soft); }
+.upload-zone input[type="file"] { display: none; }
+.upload-zone .ico { font-size: 2.5rem; color: var(--muted); margin-bottom: 10px; }
+.field-map-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px 0; padding: 16px; background: white; border-radius: 12px; border: 1px solid var(--line); }
+.field-map-row { display: contents; }
+.field-map-row > .lbl { font-weight: 700; padding: 8px 0; }
+.preview-table { max-height: 300px; overflow: auto; border: 1px solid var(--line); border-radius: 12px; background: white; margin: 12px 0; }
+.preview-table table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.preview-table th { background: var(--accent-soft); padding: 10px; text-align: left; font-size: 0.75rem; text-transform: uppercase; color: var(--accent); position: sticky; top: 0; }
+.preview-table td { padding: 8px 10px; border-top: 1px solid var(--line); }
+.login-card { max-width: 420px; margin: 40px auto; padding: 32px; background: white; border-radius: 18px; box-shadow: var(--shadow); border: 1px solid var(--panel-border); }
+.login-card h2 { font-family: Georgia, serif; color: var(--heading-ink); margin: 0 0 8px; text-align: center; font-size: 1.5rem; }
+.login-card .sub { text-align: center; color: var(--muted); font-size: 0.92rem; margin-bottom: 24px; }
+.login-card input { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--line); font-size: 16px; margin-bottom: 14px; font-family: inherit; }
+@media (max-width: 900px) {
+  .shell { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .mobile-topbar { display: flex; }
+  .main { padding: 16px; padding-bottom: 40px; }
+  .panel { padding: 18px; border-radius: 16px; }
+  .panel-title-block h2 { font-size: 1.7rem; }
+  .stat-grid { grid-template-columns: 1fr; gap: 12px; }
+  .grade-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .form-grid, .form-grid.compact { grid-template-columns: 1fr; gap: 12px; }
+  .detail-rows { grid-template-columns: 1fr; }
+  .grade-row { grid-template-columns: 1fr 60px 60px 60px; }
+  .field-map-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 500px) {
+  .grade-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="mobile-topbar">
+  <h1 id="mobile-title">IRS Civil List</h1>
+  <button class="menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">&#9776;</button>
+</div>
+<div class="mobile-drawer" id="mobile-drawer">
+  <nav class="nav">
+    <a data-view="dashboard" class="active mob-nav"><span class="icon">&#9635;</span> Dashboard</a>
+    <a data-view="lookup" class="mob-nav"><span class="icon">&#9906;</span> Quick Lookup</a>
+    <a data-view="query" class="mob-nav"><span class="icon">&#8801;</span> Query Builder</a>
+    <a data-view="full" class="mob-nav"><span class="icon">&#9646;</span> Full List</a>
+    <a data-view="admin" class="mob-nav"><span class="icon">&#9881;</span> Admin <span class="lock-icon" id="admin-lock-mob">&#128274;</span></a>
+  </nav>
+</div>
+<div class="shell">
+  <aside class="sidebar">
+    <h1 id="sidebar-title">IRS Civil List</h1>
+    <div class="tagline" id="sidebar-tagline">CBDT Seniority Portal</div>
+    <nav class="nav">
+      <a data-view="dashboard" class="active desk-nav"><span class="icon">&#9635;</span> Dashboard</a>
+      <a data-view="lookup" class="desk-nav"><span class="icon">&#9906;</span> Quick Lookup</a>
+      <a data-view="query" class="desk-nav"><span class="icon">&#8801;</span> Query Builder</a>
+      <a data-view="full" class="desk-nav"><span class="icon">&#9646;</span> Full List</a>
+      <a data-view="admin" class="desk-nav"><span class="icon">&#9881;</span> Admin <span class="lock-icon" id="admin-lock-desk">&#128274;</span></a>
+    </nav>
+    <div class="source-note" id="sidebar-source">Sources: CBDT Seniority Circular F.No. A-23012/1/2021-Ad.VI dated 03.03.2025 (base list). IRS Civil List 2026 dated 03.07.2026 (grade updates).</div>
+  </aside>
+  <main class="main">
+    <section class="view active" id="view-dashboard">
+      <div class="panel">
+        <div class="panel-title-block">
+          <div class="eyebrow" id="dash-eyebrow">Income Tax Department</div>
+          <h2 id="dash-title">IRS Civil List</h2>
+          <div class="subtitle" id="dash-subtitle">Seniority of Pr. CCIT, CCIT, Pr. CIT and CIT &mdash; grades updated as per Civil List 2026 (dated 03.07.2026)</div>
+        </div>
+        <div class="banner" id="dashboard-banner"></div>
+        <div class="stat-grid">
+          <div class="stat-card"><div class="label" id="lbl-total">Officers in list</div><div class="value" id="stat-total">&mdash;</div><div class="detail" id="stat-total-detail"></div></div>
+          <div class="stat-card"><div class="label" id="lbl-this-year">Retiring this year</div><div class="value" id="stat-this-year">&mdash;</div><div class="detail" id="stat-this-year-detail"></div></div>
+          <div class="stat-card"><div class="label" id="lbl-next-year">Retiring next year</div><div class="value" id="stat-next-year">&mdash;</div></div>
+        </div>
+        <div class="grade-grid" id="grade-grid"></div>
+        <div class="section-heading">Upcoming retirements (next 6 months)</div>
+        <div id="upcoming-retirements"></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-lookup">
+      <div class="panel">
+        <div class="panel-title-block">
+          <div class="eyebrow">Search</div>
+          <h2>Quick Lookup</h2>
+          <div class="subtitle" id="lookup-subtitle">Find by name or identifier</div>
+        </div>
+        <div class="search-row">
+          <input type="text" id="lookup-input" placeholder="Name or identifier" autocomplete="off" autocapitalize="words">
+          <button class="button" onclick="document.getElementById('lookup-input').value=''; runLookup();">Clear</button>
+        </div>
+        <div id="lookup-results"></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-query">
+      <div class="panel">
+        <div class="panel-title-block">
+          <div class="eyebrow">Filter</div>
+          <h2>Query Builder</h2>
+          <div class="subtitle">Build a custom view and export</div>
+        </div>
+        <div class="form-grid">
+          <div class="form-field"><label id="lbl-grade-filter">Grade</label><div class="chip-group" id="grade-chips"></div></div>
+          <div class="form-field"><label id="lbl-batch-filter">Batch</label><select id="batch-select" multiple size="5" style="height: 110px;"></select></div>
+        </div>
+        <div class="form-grid compact">
+          <div class="form-field"><label>Retirement from</label><input type="month" id="ret-from"></div>
+          <div class="form-field"><label>Retirement to</label><input type="month" id="ret-to"></div>
+          <div class="form-field"><label>DOB month</label>
+            <select id="dob-month">
+              <option value="">All months</option>
+              <option value="1">January</option><option value="2">February</option><option value="3">March</option><option value="4">April</option>
+              <option value="5">May</option><option value="6">June</option><option value="7">July</option><option value="8">August</option>
+              <option value="9">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-field"><label>Name contains</label><input type="text" id="name-contains" placeholder="e.g. Singh"></div>
+          <div class="form-field"><label>Quick presets</label><div class="chip-group" id="preset-chips"></div></div>
+        </div>
+        <div class="actions-bar">
+          <button class="button button-primary" onclick="runQuery()">Apply filters</button>
+          <button class="button" onclick="exportQueryCSV()">Download CSV</button>
+          <button class="button" onclick="exportQueryXLSX()" id="btn-xlsx-q">Download Excel</button>
+          <button class="button" onclick="window.print()">Print</button>
+        </div>
+        <div class="results-count" id="query-count"></div>
+        <div id="query-results"></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-full">
+      <div class="panel">
+        <div class="panel-title-block">
+          <div class="eyebrow">Reference</div>
+          <h2>Full Officer List</h2>
+          <div class="subtitle">All officers in the dataset</div>
+        </div>
+        <div class="search-row">
+          <input type="text" id="full-search" placeholder="Search this table" autocapitalize="words">
+          <select id="full-grade-filter"><option value="">All grades</option></select>
+          <button class="button" onclick="exportFullCSV()">Download CSV</button>
+          <button class="button" onclick="exportFullXLSX()" id="btn-xlsx-f">Download Excel</button>
+        </div>
+        <div class="results-count" id="full-count"></div>
+        <div id="full-results"></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-admin">
+      <div id="admin-login" class="panel">
+        <div class="login-card">
+          <h2>Admin Access</h2>
+          <div class="sub">Enter the admin passcode to manage settings and data.</div>
+          <input type="password" id="admin-pw-input" placeholder="Passcode" onkeydown="if(event.key==='Enter')adminLogin()">
+          <button class="button button-primary" style="width:100%" onclick="adminLogin()">Sign in</button>
+          <div id="admin-login-err" style="color: var(--danger); margin-top: 12px; font-size: 0.88rem; display:none;"></div>
+          <div style="margin-top: 18px; font-size: 0.78rem; color: var(--muted); text-align: center;">
+            Default passcode: <strong>admin123</strong>. Change it after signing in.
+          </div>
+        </div>
+      </div>
+      <div id="admin-content" style="display:none;">
+        <div class="panel">
+          <div class="panel-title-block">
+            <div class="eyebrow">Administration</div>
+            <h2>Manage Portal</h2>
+            <div class="subtitle">Settings, data, and publishing</div>
+          </div>
+          <div class="subtab-bar">
+            <button class="subtab active" data-subtab="settings" onclick="setSubtab('settings')">Settings</button>
+            <button class="subtab" data-subtab="data" onclick="setSubtab('data')">Data</button>
+            <button class="subtab" data-subtab="publish" onclick="setSubtab('publish')">Publish</button>
+            <button class="subtab" data-subtab="password" onclick="setSubtab('password')">Password</button>
+            <button class="subtab" onclick="adminLogout()" style="margin-left: auto; color: var(--danger);">Sign out</button>
+          </div>
+
+          <div class="subview active" id="sub-settings">
+            <div class="warn-box">Changes apply to your view immediately. To make them permanent for everyone, go to <strong>Publish</strong> and download an updated portal file.</div>
+            <div class="section-heading">Identity & Headings</div>
+            <div class="form-grid">
+              <div class="form-field"><label>Portal title</label><input type="text" id="cf-portalTitle"></div>
+              <div class="form-field"><label>Short title (sidebar/mobile)</label><input type="text" id="cf-shortTitle"></div>
+              <div class="form-field"><label>Tagline</label><input type="text" id="cf-tagline"></div>
+              <div class="form-field"><label>Eyebrow</label><input type="text" id="cf-eyebrow"></div>
+            </div>
+            <div class="form-grid">
+              <div class="form-field"><label>Subtitle</label><input type="text" id="cf-subtitle"></div>
+              <div class="form-field"><label>Source note</label><textarea id="cf-sourceNote"></textarea></div>
+            </div>
+            <div class="form-grid">
+              <div class="form-field" style="grid-column: 1 / -1;"><label>Banner HTML (on dashboard)</label><textarea id="cf-bannerHTML"></textarea><div class="help">HTML allowed. Leave blank to hide.</div></div>
+            </div>
+            <div class="section-heading">Field Labels</div>
+            <div class="form-grid compact">
+              <div class="form-field"><label>Identifier label</label><input type="text" id="cf-idLabel"><div class="help">e.g. Civil Code, Cadre Number</div></div>
+              <div class="form-field"><label>Batch label</label><input type="text" id="cf-batchLabel"><div class="help">e.g. Batch, Allotment Year</div></div>
+              <div class="form-field"><label>Grade label</label><input type="text" id="cf-gradeLabel"><div class="help">e.g. Grade, Designation</div></div>
+            </div>
+            <div class="section-heading">Retirement Rule</div>
+            <div class="form-grid compact">
+              <div class="form-field"><label>Retirement age</label>
+                <select id="cf-retirementAge">
+                  <option value="55">55</option><option value="58">58</option><option value="60">60</option>
+                  <option value="62">62</option><option value="65">65</option><option value="67">67</option><option value="70">70</option>
+                </select>
+              </div>
+              <div class="form-field"><label>Retirement rule</label>
+                <select id="cf-retirementRule">
+                  <option value="end_of_birth_month">End of birth month</option>
+                  <option value="end_of_month_before">End of month before birth month</option>
+                  <option value="exact_birthday">Exact birthday</option>
+                </select>
+              </div>
+              <div class="form-field"><label>Batch derivation</label>
+                <select id="cf-batchDerivation">
+                  <option value="code_prefix">From ID prefix (e.g. "91" = 1991)</option>
+                  <option value="none">No batch derivation</option>
+                </select>
+              </div>
+            </div>
+            <div class="section-heading">Grades</div>
+            <div class="help" style="font-size:0.85rem; color: var(--muted); margin-bottom:12px;">Order senior to junior. Squares are badge bg / text colours.</div>
+            <div id="grade-editor"></div>
+            <button class="button" onclick="addGrade()" style="margin-top: 8px;">+ Add Grade</button>
+            <div style="margin-top: 28px; display:flex; gap: 10px; flex-wrap: wrap;">
+              <button class="button button-primary" onclick="saveSettings()">Apply Settings</button>
+              <button class="button" onclick="resetSettingsForm()">Revert to Original</button>
+            </div>
+            <div id="settings-status" style="margin-top: 12px;"></div>
+          </div>
+
+          <div class="subview" id="sub-data">
+            <div class="warn-box">Upload .xlsx, .xls, or .csv. Your column headers can be anything &mdash; you'll map them in the next step.</div>
+            <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()">
+              <div class="ico">&#128206;</div>
+              <div><strong>Click to upload</strong> or drag a file here</div>
+              <div style="margin-top: 6px; font-size: 0.85rem; color: var(--muted);">First row should be column headers.</div>
+              <input type="file" id="file-input" accept=".xlsx,.xls,.csv" onchange="handleFile(event)">
+            </div>
+            <div id="upload-result"></div>
+          </div>
+
+          <div class="subview" id="sub-publish">
+            <div class="warn-box">Download a new HTML file with your current settings and data baked in. Share or upload that file to make changes permanent.</div>
+            <div class="form-grid">
+              <div class="form-field"><label>Download filename</label><input type="text" id="cf-downloadName" placeholder="portal_updated.html"></div>
+            </div>
+            <div class="actions-bar">
+              <button class="button button-success" onclick="downloadUpdatedHTML()">Download Updated Portal</button>
+              <button class="button" onclick="copyConfigToClipboard()">Copy Settings JSON</button>
+            </div>
+            <div id="publish-status"></div>
+            <div class="section-heading">Current state</div>
+            <div id="publish-preview" style="font-size:0.9rem; color:var(--muted); line-height:1.8;"></div>
+          </div>
+
+          <div class="subview" id="sub-password">
+            <div class="warn-box">Change the admin passcode. New code takes effect immediately. Go to Publish to make it permanent.</div>
+            <div class="form-grid">
+              <div class="form-field"><label>Current passcode</label><input type="password" id="cf-pw-current"></div>
+              <div class="form-field"><label>New passcode</label><input type="password" id="cf-pw-new"></div>
+            </div>
+            <div class="form-grid">
+              <div class="form-field"><label>Confirm new passcode</label><input type="password" id="cf-pw-confirm"></div>
+            </div>
+            <button class="button button-primary" onclick="changePassword()">Change Passcode</button>
+            <div id="pw-status" style="margin-top: 12px;"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+(function loadXLSX() {
+  var s = document.createElement('script');
+  s.src = 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';
+  s.async = true;
+  s.onerror = function() {
+    ['btn-xlsx-q', 'btn-xlsx-f'].forEach(function(id) {
+      var b = document.getElementById(id);
+      if (b) { b.disabled = true; b.style.opacity = '0.5'; }
+    });
+  };
+  document.head.appendChild(s);
+})();
+</script>
+
+<script>
+// ============== CONFIG_BLOCK_START ==============
+const CONFIG = {
+  portalTitle: "IRS Civil List",
+  shortTitle: "IRS Civil List",
+  tagline: "CBDT Seniority Portal",
+  eyebrow: "Income Tax Department",
+  subtitle: "Seniority of Pr. CCIT, CCIT, Pr. CIT and CIT — grades updated as per Civil List 2026 (dated 03.07.2026)",
+  sourceNote: "Sources: CBDT Seniority Circular F.No. A-23012/1/2021-Ad.VI dated 03.03.2025 (base list). IRS Civil List 2026 dated 03.07.2026 (grade updates).",
+  bannerHTML: "<strong>Grades synced from 2026 Civil List</strong> (dated 03.07.2026). All 987 officers included. 164 grade updates applied. 179 officers not in the 2026 list are shown with their last known grade — the retirement date badge reflects their status.",
+  idLabel: "Civil Code",
+  batchLabel: "Batch",
+  gradeLabel: "Grade",
+  retirementLabel: "Retirement",
+  retirementAge: 60,
+  retirementRule: "end_of_birth_month",
+  batchDerivation: "code_prefix",
+  batchCutoff: 50,
+  lookupSubtitle: "Find by name or civil code",
+  lookupPlaceholder: "Name or civil code",
+  grades: [
+    { label: "Pr. CCIT", bg: "#f7e3cd", fg: "#6b4514" },
+    { label: "CCIT",     bg: "#dce8f6", fg: "#113a62" },
+    { label: "Pr. CIT",  bg: "#dff4ea", fg: "#21714f" },
+    { label: "CIT",      bg: "#ede4f5", fg: "#5a3a85" }
+  ],
+  exportFilePrefix: "IRS",
+  storageKey: "irs_civillist_v2",
+  adminPassword: "admin123"
+};
+
+
+// ============== DATA_BLOCK_START ==============
+const RAW = [
+  ["88013", "Mitali Madhusmita", "04.06.1965", "Pr. CCIT", ""],
+  ["88014", "Amrapalli Das", "09.09.1965", "Pr. CCIT", ""],
+  ["88054", "Ashok Kumar Pandey", "08.03.1965", "Pr. CCIT", ""],
+  ["88100", "Parminder", "21.02.1965", "Pr. CCIT", ""],
+  ["89005", "Jayant Misra", "15.03.1966", "Pr. CCIT", ""],
+  ["89010", "Raj Tandon", "26.04.1965", "Pr. CCIT", ""],
+  ["89011", "Jahanzeb Akhter", "20.12.1966", "Pr. CCIT", ""],
+  ["89015", "Preeti Garg", "05.04.1966", "Pr. CCIT", ""],
+  ["89021", "Vivek Mishra", "16.05.1965", "Pr. CCIT", ""],
+  ["89023", "Pankaj Kumar Mishra", "30.10.1966", "Pr. CCIT", "Deputation"],
+  ["89024", "Prawin Kumar", "24.09.1965", "Pr. CCIT", ""],
+  ["89036", "G. R. Bhat", "27.07.1965", "Pr. CCIT", ""],
+  ["89037", "Sanjay Bahadur", "11.10.1966", "Pr. CCIT", ""],
+  ["89043", "Krishna Murari", "05.09.1965", "Pr. CCIT", ""],
+  ["89044", "Nav Ratan Soni", "20.07.1965", "Pr. CCIT", ""],
+  ["89049", "Purushottam Tripuri", "06.03.1965", "Pr. CCIT", ""],
+  ["89058", "Harshvardhini Buty", "22.07.1965", "Pr. CCIT", ""],
+  ["89060", "Satish Sharma", "01.08.1966", "Pr. CCIT", ""],
+  ["89071", "Paramita Satpathy Tripathy", "30.08.1965", "CCIT", ""],
+  [
+    "89079",
+    "Sumeet Kumar",
+    "26.05.1967",
+    "Pr. CCIT",
+    ""
+  ],
+  ["89081", "Jyoti Kumari", "18.08.1965", "CCIT", ""],
+  ["89083", "Niraj Kumar", "17.06.1965", "CCIT", ""],
+  ["89088", "L. Rajasekhar Reddy", "22.03.1966", "CCIT", ""],
+  ["89096", "Malathi Sridharan", "24.02.1966", "CCIT", ""],
+  ["89097", "Vijay Kr. Gupta", "26.04.1965", "CCIT", ""],
+  ["89101", "Manoj Kr. Gupta", "25.04.1965", "CCIT", ""],
+  [
+    "89114",
+    "G. Aparna Rao",
+    "08.08.1966",
+    "Pr. CCIT",
+    ""
+  ],
+  ["90001", "Dhirendra Kumar Mishra", "04.07.1965", "CCIT", ""],
+  ["90003", "Ankur Garg", "16.06.1965", "CCIT", ""],
+  ["90004", "Sayed Nasir Ali", "04.05.1965", "CCIT", ""],
+  ["90005", "M. Anil Kumar", "26.03.1966", "CCIT", ""],
+  ["90007", "Mona Singh", "06.06.1966", "CCIT", ""],
+  [
+    "90009",
+    "Rupinder Brar",
+    "18.12.1966",
+    "Pr. CCIT",
+    "Deputation"
+  ],
+  [
+    "90013",
+    "Monica Bhatia",
+    "14.06.1967",
+    "Pr. CCIT",
+    ""
+  ],
+  ["90014", "Prafulla Kumar Prusty", "14.06.1965", "CCIT", ""],
+  [
+    "90016",
+    "Debjyoti Das",
+    "19.11.1966",
+    "Pr. CCIT",
+    ""
+  ],
+  [
+    "90017",
+    "Aparna Karan",
+    "09.10.1966",
+    "Pr. CCIT",
+    ""
+  ],
+  [
+    "90019",
+    "Surbhi Varma Garg",
+    "14.02.1967",
+    "Pr. CCIT",
+    ""
+  ],
+  ["90022", "Enjeti Sri. Nagendra Prasad", "11.12.1965", "CCIT", ""],
+  ["90023", "Sanjay Kumar Sah", "11.04.1965", "CCIT", ""],
+  ["90026", "Amal Pusp", "02.12.1965", "CCIT", ""],
+  ["90028", "Amitav", "09.03.1966", "CCIT", ""],
+  [
+    "90029",
+    "Prasenjit Singh",
+    "30.09.1966",
+    "Pr. CCIT",
+    ""
+  ],
+  ["90030", "Shrikant Kumar Ambastha", "21.06.1965", "CCIT", ""],
+  ["90034", "Vimalendu Verma", "12.02.1965", "CCIT", ""],
+  [
+    "90036",
+    "Amit Mohan Govil",
+    "08.10.1966",
+    "Pr. CCIT",
+    "Deputation"
+  ],
+  [
+    "90037",
+    "Peeyush Jain",
+    "30.06.1967",
+    "Pr. CCIT",
+    ""
+  ],
+  ["90038", "Adarsh Kumar Modi", "17.01.1966", "CCIT", ""],
+  [
+    "90039",
+    "Rajeshwar Yadav",
+    "01.11.1966",
+    "Pr. CCIT",
+    ""
+  ],
+  ["90041", "Sulekha Verma", "09.02.1965", "CCIT", ""],
+  ["89001", "Varinder Mehta", "01.03.1965", "CCIT", ""],
+  ["90043", "Lalit Krishan Singh Dehiya", "01.01.1966", "CCIT", ""],
+  [
+    "90044",
+    "Anita Sinha",
+    "25.08.1966",
+    "Pr. CCIT",
+    ""
+  ],
+  [
+    "90045",
+    "Ashok Kumar Saroha",
+    "22.01.1967",
+    "Pr. CCIT",
+    ""
+  ],
+  ["90046", "Anand Rajeshwar Baiwar", "06.12.1965", "CCIT", ""],
+  [
+    "90049",
+    "Anand Jha",
+    "10.06.1967",
+    "Pr. CCIT",
+    ""
+  ],
+  ["90053", "Asit Singh", "01.02.1966", "CCIT", ""],
+  [
+    "90054",
+    "Sunil Bajpai",
+    "04.05.1968",
+    "Pr. CCIT",
+    ""
+  ],
+  ["90055", "Sanjay Rai", "20.04.1965", "CCIT", ""],
+  ["90061", "Mithilesh Kumar Jha", "07.07.1965", "CCIT", ""],
+  [
+    "90065",
+    "Alok Kumar",
+    "01.10.1966",
+    "Pr. CCIT",
+    ""
+  ],
+  ["90066", "Ruchika Chaudhry", "31.12.1965", "CCIT", ""],
+  ["90069", "Shantanu Dhamija", "15.09.1965", "CCIT", ""],
+  ["90072", "Mukesh Verma", "10.12.1965", "CCIT", ""],
+  [
+    "90074",
+    "Aparna Mittal",
+    "29.11.1966",
+    "Pr. CCIT",
+    ""
+  ],
+  ["90075", "Sandip Pradhan", "17.01.1967", "CCIT", ""],
+  ["90077", "Sushma Singh", "10.02.1965", "CCIT", ""],
+  ["90079", "Ashok K. Jha", "23.09.1965", "CCIT", ""],
+  ["90084", "Shashi Bhushan Prasad", "28.02.1965", "CCIT", ""],
+  ["90086", "Narender Kumar", "14.02.1966", "CCIT", ""],
+  ["90091", "Sanjay Prasad", "25.01.1966", "CCIT", "Deputation"],
+  ["90092", "Syed Mohammad Jawad Abidi", "16.11.1965", "CCIT", ""],
+  ["90094", "Vismita Tej", "18.09.1965", "CCIT", "Deputation"],
+  ["90095", "Reema Hota Singh", "17.04.1965", "CCIT", ""],
+  ["90098", "Devinder S. Kalayan", "04.05.1965", "CCIT", "Deputation"],
+  ["90104", "Nivedita Biswas", "04.07.1965", "CCIT", ""],
+  [
+    "90105",
+    "Dirisam Sudhakara Rao",
+    "15.08.1966",
+    "Pr. CCIT",
+    ""
+  ],
+  ["90107", "G. M. Doss", "08.06.1965", "CCIT", ""],
+  ["90108", "Gautam Mandal", "28.06.1966", "CCIT", ""],
+  ["90118", "Pathiavath Peerya", "05.05.1965", "CCIT", ""],
+  ["90119", "Suneel Verma", "24.04.1965", "CCIT", ""],
+  [
+    "90120",
+    "Priscilla Singsit",
+    "01.03.1967",
+    "Pr. CCIT",
+    ""
+  ],
+  ["90121", "Lal Chand", "20.04.1965", "CCIT", ""],
+  [
+    "90123",
+    "N. Longvah",
+    "31.05.1967",
+    "Pr. CCIT",
+    ""
+  ],
+  ["91001", "Renu Amitabh", "01.01.1966", "CCIT", ""],
+  [
+    "91005",
+    "Mayank Priyadarshi",
+    "30.09.1966",
+    "Pr. CCIT",
+    ""
+  ],
+  ["91006", "Preeti Jain Das", "26.09.1965", "CCIT", ""],
+  [
+    "91008",
+    "Pallavi Agarwal",
+    "05.12.1967",
+    "Pr. CCIT",
+    "Deputation"
+  ],
+  [
+    "91010",
+    "Rolee Agarwal",
+    "14.06.1968",
+    "Pr. CCIT",
+    ""
+  ],
+  [
+    "91013",
+    "Mona Mohanty",
+    "25.12.1966",
+    "Pr. CCIT",
+    ""
+  ],
+  ["91014", "Ashima Gupta", "15.02.1966", "CCIT", ""],
+  [
+    "91015",
+    "Vidisha Kalra",
+    "16.02.1967",
+    "Pr. CCIT",
+    ""
+  ],
+  [
+    "91019",
+    "Suresh Battini",
+    "17.08.1967",
+    "Pr. CCIT",
+    ""
+  ],
+  [
+    "91021",
+    "Sanjeev Singh",
+    "24.08.1968",
+    "Pr. CCIT",
+    ""
+  ],
+  ["91022", "G. Guruswamy", "08.06.1965", "CCIT", ""],
+  [
+    "91024",
+    "Vivek R. Wadekar",
+    "01.09.1967",
+    "Pr. CCIT",
+    ""
+  ],
+  ["91026", "Satish Kumar Goyal", "05.10.1966", "CCIT", ""],
+  ["91029", "P. Selvaganesh", "02.12.1965", "CCIT", ""],
+  ["91032", "Prafulla Kumar Mishra", "23.05.1965", "CCIT", ""],
+  ["91035", "Gopal Krushna Dhall", "07.07.1966", "CCIT", ""],
+  ["91037", "Rajesh Kumar Gupta", "22.05.1967", "CCIT", ""],
+  ["91039", "Partap Singh", "02.12.1965", "CCIT", ""],
+  ["91043", "Deepali Chandra", "25.09.1966", "CCIT", ""],
+  ["91048", "Sunil Kumar Singh", "07.12.1967", "CCIT", ""],
+  ["91049", "Shishir Dhamija", "30.09.1966", "CCIT", ""],
+  ["91052", "Sudhanshu Shekhar Jha", "23.08.1965", "CCIT", ""],
+  ["91060", "Arun C. Bharat", "21.09.1966", "CCIT", ""],
+  ["91061", "Ram Mohan Tiwari", "30.06.1965", "CCIT", ""],
+  ["91067", "Yogesh Kumar Verma", "29.10.1966", "CCIT", ""],
+  ["91068", "S. Naiyer Ali Najmi", "11.06.1965", "CCIT", ""],
+  ["91070", "Vibha Bhalla", "09.02.1965", "CCIT", ""],
+  ["91072", "Sunil Kumar", "15.06.1965", "CCIT", ""],
+  ["91073", "Ranjan Kumar", "11.07.1965", "CCIT", ""],
+  ["91076", "Ajay Kumar Atri", "01.02.1967", "CCIT", ""],
+  ["91079", "Devinder Kumar Gupta", "09.12.1965", "CCIT", ""],
+  ["91053", "D. K. Mishra", "01.12.1965", "Pr. CIT", ""],
+  ["91057", "Jasbir Singh Chouhan", "03.09.1965", "Pr. CIT", ""],
+  ["91080", "Sanjay Agrawal", "09.11.1965", "Pr. CIT", ""],
+  ["91082", "Sanjeet Singh", "24.04.1966", "Pr. CIT", ""],
+  [
+    "91085",
+    "Kalika Singh",
+    "03.08.1966",
+    "CCIT",
+    ""
+  ],
+  ["91088", "Munesh Kumar", "15.02.1965", "Pr. CIT", ""],
+  ["91089", "Kishan Kumar Vyas", "17.01.1966", "Pr. CIT", ""],
+  [
+    "91090",
+    "Ajit Kumar Singh",
+    "02.01.1967",
+    "CCIT",
+    ""
+  ],
+  [
+    "91096",
+    "Anurag Sahay",
+    "08.11.1966",
+    "CCIT",
+    ""
+  ],
+  [
+    "91100",
+    "Abha Rani Singh",
+    "10.07.1967",
+    "CCIT",
+    ""
+  ],
+  [
+    "91105",
+    "Anurag Prasad",
+    "22.09.1968",
+    "CCIT",
+    ""
+  ],
+  [
+    "91107",
+    "Sushil Kumar Madhuk",
+    "14.04.1967",
+    "CCIT",
+    ""
+  ],
+  ["91111", "N. Rengaraj", "03.05.1965", "Pr. CIT", ""],
+  ["91119", "Surendra Kumar", "28.09.1965", "Pr. CIT", ""],
+  ["91122", "Pradeep S. Hedaoo", "01.07.1965", "Pr. CIT", ""],
+  [
+    "91127",
+    "Esther Lal Ruatkimi",
+    "05.10.1966",
+    "CCIT",
+    ""
+  ],
+  ["92002", "N. Jayasankar", "01.05.1966", "Pr. CIT", ""],
+  [
+    "92003",
+    "Vatsalaa Jha",
+    "30.08.1969",
+    "CCIT",
+    ""
+  ],
+  [
+    "92004",
+    "G. Shanker Phani Kishore",
+    "03.04.1967",
+    "CCIT",
+    ""
+  ],
+  [
+    "92006",
+    "Nirupama Kotru",
+    "28.01.1969",
+    "CCIT",
+    ""
+  ],
+  [
+    "92007",
+    "Vandana Sagar",
+    "26.01.1969",
+    "CCIT",
+    ""
+  ],
+  [
+    "92008",
+    "Krishamurthi Ramesh",
+    "22.11.1967",
+    "CCIT",
+    ""
+  ],
+  [
+    "92009",
+    "Nidhi Srivastava",
+    "27.04.1967",
+    "CCIT",
+    ""
+  ],
+  [
+    "92011",
+    "O. P. Singh",
+    "15.05.1967",
+    "CCIT",
+    ""
+  ],
+  ["92012", "Deep Kant Prasad", "10.09.1965", "Pr. CIT", ""],
+  [
+    "92013",
+    "Renuka Jain Gupta",
+    "31.07.1967",
+    "CCIT",
+    ""
+  ],
+  [
+    "92014",
+    "Siripurapu Padmaja",
+    "15.09.1967",
+    "CCIT",
+    ""
+  ],
+  [
+    "92015",
+    "Surabhi Ahluwalia",
+    "03.01.1969",
+    "CCIT",
+    ""
+  ],
+  [
+    "92016",
+    "Srinivas Danda",
+    "17.02.1967",
+    "CCIT",
+    ""
+  ],
+  ["92017", "Leena Srivastava", "30.09.1965", "Pr. CIT", ""],
+  [
+    "92018",
+    "V. S. Sreelekha",
+    "10.04.1967",
+    "CCIT",
+    ""
+  ],
+  [
+    "92019",
+    "Anupama Anand",
+    "09.09.1966",
+    "CCIT",
+    ""
+  ],
+  [
+    "92020",
+    "Manu Malik",
+    "15.02.1968",
+    "CCIT",
+    ""
+  ],
+  ["92021", "Amlan Tripathy", "28.12.1965", "Pr. CIT", ""],
+  [
+    "92024",
+    "Rajarshi Dwivedy",
+    "11.09.1967",
+    "CCIT",
+    ""
+  ],
+  [
+    "92026",
+    "Vasundhara Upmanyu",
+    "09.10.1967",
+    "CCIT",
+    ""
+  ],
+  [
+    "92028",
+    "Manisha Chandra",
+    "31.01.1969",
+    "CCIT",
+    ""
+  ],
+  ["92031", "Dr. Sibichen K. Mathew", "20.05.1966", "Pr. CIT", ""],
+  [
+    "92033",
+    "Anand Kumar Kedia",
+    "15.04.1968",
+    "CCIT",
+    ""
+  ],
+  ["92034", "Sant Saran Mantri", "24.09.1965", "Pr. CIT", ""],
+  [
+    "92035",
+    "Divya Misra Bajpai",
+    "05.11.1966",
+    "CCIT",
+    ""
+  ],
+  [
+    "92036",
+    "Harinder Kumar",
+    "17.10.1967",
+    "CCIT",
+    ""
+  ],
+  ["92041", "Parwinder Kaur", "30.06.1965", "Pr. CIT", ""],
+  ["92042", "Nausheen Jahan Ansari", "30.10.1965", "Pr. CIT", ""],
+  [
+    "92043",
+    "Sanjay Kumar",
+    "01.11.1966",
+    "CCIT",
+    ""
+  ],
+  [
+    "92045",
+    "Dr. Shaik Shakir Hussain",
+    "01.07.1967",
+    "CCIT",
+    ""
+  ],
+  ["92048", "K. Devarathna Kumar", "17.04.1966", "Pr. CIT", ""],
+  [
+    "92051",
+    "Bijoy Kumar Panda",
+    "19.07.1967",
+    "CCIT",
+    ""
+  ],
+  ["92052", "Samir Kumar Jha", "07.09.1968", "Pr. CIT", ""],
+  ["92055", "Rajesh Kumar Jha", "01.07.1966", "Pr. CIT", ""],
+  [
+    "92056",
+    "Jayaram Raipura",
+    "23.03.1968",
+    "CCIT",
+    ""
+  ],
+  ["92057", "Tajinder Pal Singh", "23.01.1965", "Pr. CIT", ""],
+  [
+    "92059",
+    "Vikram Sahay",
+    "17.08.1966",
+    "CCIT",
+    ""
+  ],
+  [
+    "92063",
+    "Sarita Mishra Kolhe",
+    "03.07.1967",
+    "CCIT",
+    ""
+  ],
+  [
+    "92064",
+    "Manoj Pandey",
+    "21.09.1968",
+    "CCIT",
+    ""
+  ],
+  ["92065", "Pankaj Kumar", "30.01.1966", "Pr. CIT", ""],
+  ["92067", "Vandana Verma", "23.01.1966", "Pr. CIT", ""],
+  [
+    "92072",
+    "Vivek Kumar",
+    "01.09.1968",
+    "CCIT",
+    ""
+  ],
+  [
+    "92074",
+    "Rakesh Gupta",
+    "19.09.1968",
+    "CCIT",
+    ""
+  ],
+  [
+    "92078",
+    "Yagyasaini Kakkar",
+    "20.07.1967",
+    "CCIT",
+    ""
+  ],
+  ["92081", "T. H. Vijayalakshmi", "05.05.1966", "Pr. CIT", ""],
+  [
+    "92084",
+    "Darzakhum Songate",
+    "22.11.1969",
+    "CCIT",
+    ""
+  ],
+  [
+    "92087",
+    "Manjit Singh",
+    "30.06.1969",
+    "CCIT",
+    ""
+  ],
+  [
+    "92088",
+    "Sunitha Billa",
+    "19.08.1968",
+    "CCIT",
+    ""
+  ],
+  ["92089", "B. Koteswara Rao", "15.09.1965", "Pr. CIT", ""],
+  [
+    "92091",
+    "Komal Jogpal",
+    "20.02.1969",
+    "CCIT",
+    ""
+  ],
+  [
+    "92099",
+    "R. C. Meena",
+    "08.05.1967",
+    "CCIT",
+    ""
+  ],
+  [
+    "92100",
+    "Rajesh Damor",
+    "16.12.1968",
+    "CCIT",
+    ""
+  ],
+  [
+    "93001",
+    "Mohit Jain",
+    "05.09.1970",
+    "CCIT",
+    ""
+  ],
+  ["93002", "Jay Kishore Mishra", "01.01.1966", "Pr. CIT", ""],
+  [
+    "93007",
+    "B. V. Prasad Reddy",
+    "02.10.1968",
+    "CCIT",
+    ""
+  ],
+  [
+    "93008",
+    "Bhavna C. Yashroy",
+    "31.07.1969",
+    "CCIT",
+    ""
+  ],
+  [
+    "93009",
+    "Ashish Abrol",
+    "18.10.1967",
+    "CCIT",
+    ""
+  ],
+  [
+    "93011",
+    "Anuj Arora",
+    "17.07.1966",
+    "CCIT",
+    ""
+  ],
+  ["93012", "Nandita Kanchan", "08.05.1965", "Pr. CIT", ""],
+  [
+    "93014",
+    "Rita Kumari Dokania",
+    "04.03.1969",
+    "CCIT",
+    ""
+  ],
+  [
+    "93016",
+    "Rahul Raman",
+    "05.04.1968",
+    "CCIT",
+    ""
+  ],
+  [
+    "93017",
+    "Shefali Swaroop",
+    "10.04.1970",
+    "CCIT",
+    ""
+  ],
+  ["93021", "Biswaranjan Sasmal", "07.02.1966", "Pr. CIT", ""],
+  ["93022", "Muzaffar Hussain", "02.11.1965", "Pr. CIT", ""],
+  [
+    "93023",
+    "Anand Mohan",
+    "14.10.1967",
+    "CCIT",
+    ""
+  ],
+  [
+    "93025",
+    "Vijay Shankar",
+    "01.10.1966",
+    "CCIT",
+    ""
+  ],
+  [
+    "93026",
+    "Jagdish P. Chandrakar",
+    "04.11.1966",
+    "CCIT",
+    ""
+  ],
+  ["93028", "T. Vihaya Bhasker Reddy", "16.06.1965", "Pr. CIT", ""],
+  [
+    "93030",
+    "Sanjiv",
+    "05.07.1969",
+    "CCIT",
+    ""
+  ],
+  [
+    "93031",
+    "Amol S. Kamat",
+    "20.03.1970",
+    "CCIT",
+    ""
+  ],
+  [
+    "93036",
+    "Sunil Kumar Singh",
+    "30.09.1968",
+    "CCIT",
+    ""
+  ],
+  [
+    "93037",
+    "Anurag Srivastava",
+    "20.02.1970",
+    "CCIT",
+    ""
+  ],
+  [
+    "93038",
+    "T. Bidari Sreenivas",
+    "24.02.1970",
+    "CCIT",
+    ""
+  ],
+  [
+    "93039",
+    "Meenakshi Singh",
+    "26.01.1970",
+    "CCIT",
+    ""
+  ],
+  [
+    "93040",
+    "Alok Singh",
+    "28.08.1970",
+    "CCIT",
+    ""
+  ],
+  [
+    "93042",
+    "Pramod Kumar Singh",
+    "04.07.1970",
+    "CCIT",
+    ""
+  ],
+  [
+    "93043",
+    "Sanjay Goyal",
+    "09.03.1970",
+    "CCIT",
+    ""
+  ],
+  [
+    "93044",
+    "Jagjivan K. Garg",
+    "12.06.1969",
+    "CCIT",
+    ""
+  ],
+  [
+    "93045",
+    "Kanwal Jit Singh",
+    "28.07.1966",
+    "CCIT",
+    ""
+  ],
+  [
+    "93047",
+    "Dilip Singh Kothari",
+    "20.02.1969",
+    "CCIT",
+    ""
+  ],
+  [
+    "93052",
+    "Jeotsna Johri",
+    "09.11.1968",
+    "CCIT",
+    ""
+  ],
+  ["93053", "Hari Govind Singh", "04.03.1966", "Pr. CIT", ""],
+  [
+    "93054",
+    "Ravi Shankar Shrivastava",
+    "14.05.1970",
+    "CCIT",
+    ""
+  ],
+  [
+    "93060",
+    "Meeta Singh",
+    "04.12.1968",
+    "CCIT",
+    ""
+  ],
+  [
+    "93063",
+    "Satpal Gulati",
+    "09.12.1967",
+    "CCIT",
+    ""
+  ],
+  [
+    "93066",
+    "V. Pallanivel Rajan",
+    "26.07.1968",
+    "CCIT",
+    ""
+  ],
+  [
+    "93068",
+    "Jaspreet Singh Minhas",
+    "25.09.1968",
+    "CCIT",
+    ""
+  ],
+  ["93069", "Gangadhar Panda", "26.05.1965", "Pr. CIT", ""],
+  ["93070", "Rajeev Kumar", "03.12.1965", "Pr. CIT", ""],
+  ["93073", "P. Chandra Sekhar", "10.06.1965", "Pr. CIT", ""],
+  [
+    "93074",
+    "Rahul Navin",
+    "03.07.1967",
+    "CCIT",
+    ""
+  ],
+  [
+    "93075",
+    "Sanjiv Shankar",
+    "17.06.1967",
+    "CCIT",
+    ""
+  ],
+  [
+    "93076",
+    "N. C. Swain",
+    "17.05.1967",
+    "CCIT",
+    ""
+  ],
+  [
+    "93077",
+    "Raman Chopra",
+    "19.08.1969",
+    "CCIT",
+    ""
+  ],
+  [
+    "93078",
+    "Virendra Ojha",
+    "22.12.1966",
+    "CCIT",
+    ""
+  ],
+  [
+    "93080",
+    "Richa Khoda",
+    "16.05.1969",
+    "CCIT",
+    ""
+  ],
+  [
+    "93081",
+    "Jasdeep Singh",
+    "31.07.1969",
+    "CCIT",
+    ""
+  ],
+  [
+    "93082",
+    "Paramita M. Biswas",
+    "04.04.1970",
+    "CCIT",
+    ""
+  ],
+  [
+    "93084",
+    "Rajiv Kumar Singh",
+    "17.02.1968",
+    "CCIT",
+    ""
+  ],
+  [
+    "93091",
+    "Shivraj B. Morey",
+    "30.07.1970",
+    "CCIT",
+    ""
+  ],
+  [
+    "93092",
+    "Gulshan Raj",
+    "23.08.1966",
+    "CCIT",
+    ""
+  ],
+  ["93093", "Radhey Shyam", "10.05.1967", "Pr. CIT", ""],
+  ["93094", "Yaswant K. Bhaskar", "30.08.1967", "Pr. CIT", ""],
+  ["93099", "Savita Bundas", "08.03.1970", "Pr. CIT", ""],
+  ["94001", "Vanita Rattan Sharma", "09.12.1968", "Pr. CIT", ""],
+  ["94002", "Upendra Bhushan Mishra", "10.01.1969", "Pr. CIT", ""],
+  ["94003", "Shahi Sanjay Kumar", "30.09.1968", "Pr. CIT", ""],
+  ["94004", "Swati Joshi", "21.03.1971", "Pr. CIT", ""],
+  ["94005", "Sukhveer Singh Choudhary", "23.05.1967", "Pr. CIT", ""],
+  ["94006", "Abhjit A. Patankar", "08.12.1971", "Pr. CIT", ""],
+  ["94008", "Amaresh Singh", "27.02.1968", "Pr. CIT", ""],
+  ["94009", "Sunil K. Jha", "31.08.1967", "Pr. CIT", ""],
+  ["94010", "Saroj Kumar Mahapatra", "10.11.1967", "Pr. CIT", ""],
+  ["94012", "Sunita Singh", "16.06.1970", "Pr. CIT", ""],
+  ["94013", "Priya Ranjan Ghosh", "10.09.1969", "Pr. CIT", ""],
+  ["94015", "Manas Mehrotra", "02.05.1969", "Pr. CIT", ""],
+  ["94016", "Vatsalya Saxena", "30.04.1968", "Pr. CIT", ""],
+  ["94017", "Harendra Narayan Singh", "08.07.1966", "Pr. CIT", ""],
+  ["94019", "Krishna Kumar Mishra", "07.07.1969", "Pr. CIT", ""],
+  ["94023", "Bhuvnesh Kulshrestha", "22.08.1969", "Pr. CIT", ""],
+  ["94025", "Satender Singh Rana", "20.01.1970", "Pr. CIT", ""],
+  ["94026", "R. Venkateswara Reddy", "01.06.1968", "Pr. CIT", ""],
+  ["94028", "Avadesh Kumar", "12.08.1969", "Pr. CIT", ""],
+  ["94029", "Rajeev Kumar", "14.01.1968", "Pr. CIT", ""],
+  ["94030", "Harishankar Kumar Lal", "18.11.1969", "Pr. CIT", ""],
+  ["94031", "Sangram R. Gaikwad", "22.03.1968", "Pr. CIT", ""],
+  ["94032", "Aroop Kumar Singh", "27.07.1970", "Pr. CIT", ""],
+  ["94033", "Rajesh Kumar", "02.01.1967", "Pr. CIT", ""],
+  ["94034", "Krishan Kumar", "18.04.1969", "Pr. CIT", ""],
+  ["94036", "Rajesh Kumar Bhoot", "14.10.1967", "Pr. CIT", ""],
+  ["94037", "Anurag Goyal", "11.02.1970", "Pr. CIT", ""],
+  ["94038", "Rajat S. Biswas", "05.04.1967", "Pr. CIT", ""],
+  ["94039", "Manoj Kumar", "30.12.1967", "Pr. CIT", ""],
+  ["94040", "Raj Gopal Sharma", "10.07.1969", "Pr. CIT", ""],
+  ["94041", "Mahesh Kumar Shah", "03.09.1969", "Pr. CIT", ""],
+  ["94042", "Amrita Mishra", "24.12.1966", "Pr. CIT", ""],
+  ["94044", "Ram Mohan Singh", "05.01.1970", "Pr. CIT", ""],
+  ["94045", "Shalini Bhargava Kaushal", "14.09.1970", "Pr. CIT", ""],
+  ["94046", "Munish Kr. Gupta", "13.01.1969", "Pr. CIT", ""],
+  ["94047", "Amrita Ranjan", "13.09.1969", "Pr. CIT", ""],
+  ["94050", "Meenakshi J. Goswami", "26.03.1971", "Pr. CIT", ""],
+  ["94051", "Anurag Vardhan", "12.12.1968", "Pr. CIT", ""],
+  ["94053", "Archana Sharma", "05.10.1970", "Pr. CIT", ""],
+  ["94056", "Hrishikesh Kumar", "09.11.1965", "Pr. CIT", ""],
+  ["94057", "Deepika Mittal", "18.07.1969", "Pr. CIT", ""],
+  ["94058", "V. Vivekanandan", "13.07.1969", "Pr. CIT", ""],
+  ["94060", "Devender Singh", "20.04.1968", "Pr. CIT", ""],
+  ["94061", "Sandeep Dahiya", "28.11.1965", "Pr. CIT", ""],
+  ["94062", "Uma Shankar Dhyani", "02.09.1969", "Pr. CIT", ""],
+  ["94063", "Inder Pal Singh Bindra", "07.10.1970", "Pr. CIT", ""],
+  ["94064", "Ansuman Pattnaik", "22.08.1969", "Pr. CIT", ""],
+  ["94066", "Sanjay Gupta", "26.03.1966", "Pr. CIT", ""],
+  ["94067", "Ajay Kr. Sharma", "23.04.1968", "Pr. CIT", ""],
+  ["94070", "Anshu Prakash", "26.08.1967", "Pr. CIT", ""],
+  ["94071", "Shishir Srivastav", "30.05.1967", "Pr. CIT", ""],
+  ["94073", "S. Uma Venkatesan", "20.10.1967", "Pr. CIT", ""],
+  ["94074", "T. Diwakar Prasad", "01.08.1968", "Pr. CIT", ""],
+  ["94075", "T. Vasanthan", "29.06.1968", "Pr. CIT", ""],
+  ["94076", "Sushil Kumar Poddar", "02.12.1968", "Pr. CIT", ""],
+  ["94077", "Shivani Singh", "04.03.1969", "Pr. CIT", ""],
+  ["94078", "Raman Kant Garg", "09.06.1968", "Pr. CIT", ""],
+  ["94079", "Rajendra Kumar", "10.08.1965", "Pr. CIT", ""],
+  ["94080", "Sheela Chopra", "18.08.1968", "Pr. CIT", ""],
+  ["94081", "G. Gaichanglungliu Kamei", "24.11.1969", "Pr. CIT", ""],
+  ["94083", "Jitender Kumar", "14.04.1968", "Pr. CIT", ""],
+  ["94084", "Ramesh Chand Danday", "25.03.1968", "Pr. CIT", ""],
+  ["94088", "K. Ravi Ramachandran", "05.07.1965", "Pr. CIT", ""],
+  ["94089", "Ann L. Kapthuama", "29.12.1967", "Pr. CIT", ""],
+  ["94090", "Mahua Sarkar", "25.05.1968", "Pr. CIT", ""],
+  ["94091", "Peeyush Sonkar", "10.09.1969", "Pr. CIT", ""],
+  ["94092", "Devi Sharan Singh", "07.05.1965", "Pr. CIT", ""],
+  ["94095", "B. Kishore", "11.11.1969", "Pr. CIT", ""],
+  ["94096", "R. Mohan Madhavi", "01.06.1965", "Pr. CIT", ""],
+  ["94098", "Narendra Singh Jangpangi", "01.03.1967", "Pr. CIT", ""],
+  ["94100", "David Zothanpuia Chawngthu", "17.04.1970", "Pr. CIT", ""],
+  ["95001", "Puja Jindal", "31.12.1967", "Pr. CIT", ""],
+  ["95004", "Simran Bhullar (Dr.)", "05.03.1971", "Pr. CIT", ""],
+  ["95005", "Susan D. George", "04.03.1971", "Pr. CIT", ""],
+  ["95006", "Vinay Kumar Singh (Dr)", "14.04.1967", "Pr. CIT", ""],
+  ["95007", "Vivek Nangia", "20.10.1966", "Pr. CIT", ""],
+  ["95008", "Mamta Kochar", "03.01.1968", "Pr. CIT", ""],
+  ["95009", "Rahul Garg", "06.04.1967", "Pr. CIT", ""],
+  ["95011", "Amal Garg", "27.12.1970", "Pr. CIT", ""],
+  ["95014", "Sameer Kumar Srivastava", "16.12.1970", "Pr. CIT", ""],
+  ["95015", "Paresh Johri", "23.09.1969", "Pr. CIT", ""],
+  ["95016", "Bhaskar Goswami", "17.01.1970", "Pr. CIT", ""],
+  ["95017", "Rakesh Garg", "25.05.1968", "Pr. CIT", ""],
+  ["95022", "Manish Mishra", "04.04.1970", "Pr. CIT", ""],
+  ["95023", "Purushottam Kashyap", "05.07.1969", "Pr. CIT", ""],
+  ["95024", "Rajeev Ranka", "23.08.1970", "Pr. CIT", ""],
+  ["95025", "Madhukar Kumar Bhagat", "08.06.1972", "Pr. CIT", ""],
+  ["95027", "Md. Tarique Kalim", "05.12.1968", "Pr. CIT", ""],
+  ["95028", "Rajesh Kumar Kedia", "28.08.1968", "Pr. CIT", ""],
+  ["95029", "Raja Ram Sah", "03.01.1968", "Pr. CIT", ""],
+  ["95030", "C. Tripura Sundari", "22.06.1972", "Pr. CIT", ""],
+  ["95031", "Prem Chandra Maurya", "04.01.1968", "Pr. CIT", ""],
+  ["95032", "K. Madhusudhan", "16.04.1968", "Pr. CIT", ""],
+  ["95034", "Sunil Babu K.E.", "12.07.1967", "Pr. CIT", ""],
+  ["95035", "Sandeep Bandhu", "13.11.1972", "Pr. CIT", ""],
+  ["95037", "Deepak Kumar Sutariya", "29.11.1968", "Pr. CIT", ""],
+  ["95039", "Shravan Kumar Gotru", "15.06.1968", "Pr. CIT", ""],
+  ["95041", "L. Ramjirao Pantulu", "29.04.1970", "Pr. CIT", ""],
+  ["95042", "Kalpana Kataria", "31.01.1972", "Pr. CIT", ""],
+  ["95043", "S. Ravichandran", "20.01.1968", "Pr. CIT", ""],
+  ["95044", "Arun Kumar", "24.03.1968", "Pr. CIT", ""],
+  ["95045", "B. Srinivas", "25.12.1971", "Pr. CIT", ""],
+  ["95047", "Deba Kumar Sonowal", "31.12.1969", "Pr. CIT", ""],
+  ["95048", "Thanggoulein Kipgen", "04.01.1969", "Pr. CIT", ""],
+  ["95049", "Kesang Yangzom Sherpa", "10.04.1973", "Pr. CIT", ""],
+  ["95049A", "Sanjay I. Bara", "31.01.1968", "Pr. CIT", ""],
+  ["96003", "Maya Maheshwari", "24.05.1971", "Pr. CIT", ""],
+  ["96004", "Garima Jain", "19.12.1973", "Pr. CIT", ""],
+  ["96007", "Manvendra Goyal", "21.02.1971", "Pr. CIT", ""],
+  ["96008", "Tushar Dhawal Singh", "22.08.1973", "Pr. CIT", ""],
+  ["96009", "Vikram Batra", "02.02.1971", "Pr. CIT", ""],
+  ["92068", "Shamsundar M. Keshkamat", "06.10.1967", "Pr. CIT", ""],
+  ["96010", "Chandrajit Singh", "25.08.1970", "Pr. CIT", ""],
+  ["96013", "Abani Kanta Nayak (Dr.)", "05.11.1969", "Pr. CIT", ""],
+  ["96014", "Garima Bhagat", "28.01.1973", "Pr. CIT", ""],
+  ["96015", "Monica Khare", "11.09.1969", "Pr. CIT", ""],
+  ["94048", "Subhakanta Sahu", "06.06.1969", "Pr. CIT", ""],
+  ["96016", "Ramendra Kr. Vishwakarma", "06.05.1970", "Pr. CIT", ""],
+  ["96017", "Sunita Verma", "03.04.1971", "Pr. CIT", ""],
+  ["96019", "Sunil A. Umap", "10.03.1967", "Pr. CIT", ""],
+  ["96020", "Abha Rani Singh", "04.08.1967", "Pr. CIT", ""],
+  ["96022", "A. Sreenivasa Rao", "08.08.1966", "Pr. CIT", ""],
+  ["96025", "Anjala Sahu", "20.02.1972", "Pr. CIT", ""],
+  ["96027", "Kolakaluri Ravi Kiran", "04.05.1970", "Pr. CIT", ""],
+  ["96029", "T. Roumuan Paite", "14.07.1973", "Pr. CIT", ""],
+  ["97001", "Abhay Kumar Thakur", "04.02.1972", "Pr. CIT", ""],
+  ["97002", "Dr. Sandeep Goel", "08.01.1972", "Pr. CIT", ""],
+  ["97003", "Anusha Khurana", "07.05.1970", "Pr. CIT", ""],
+  ["97006", "Deepak Garg", "05.06.1972", "Pr. CIT", ""],
+  ["97007", "Garima Singh", "15.02.1973", "Pr. CIT", ""],
+  ["97008", "Nidhi Singh", "20.12.1970", "Pr. CIT", ""],
+  ["97009", "Prabhat Kumar Gupta", "09.04.1970", "Pr. CIT", ""],
+  ["97009-A", "Amitabh Kr. Sinha", "14.12.1969", "Pr. CIT", ""],
+  ["97010", "Mudit Nagpal", "15.11.1972", "Pr. CIT", ""],
+  ["97013", "Phani Raju H.", "01.06.1971", "Pr. CIT", ""],
+  ["97014", "Rashmita Jha", "12.08.1971", "Pr. CIT", ""],
+  ["97015", "Rajeev Kumar Sahu", "20.11.1970", "Pr. CIT", ""],
+  ["97016", "Jagdish Prasad Jangid", "05.11.1971", "Pr. CIT", ""],
+  ["97017", "Samir Tekriwal", "11.11.1972", "Pr. CIT", ""],
+  ["97019", "Pallavi Darade", "16.08.1972", "Pr. CIT", ""],
+  ["97021", "Jothilakshmi Nayak", "09.12.1965", "Pr. CIT", ""],
+  ["97023", "Somogyan Pal", "15.11.1971", "Pr. CIT", ""],
+  ["97024", "Manoj Kumar Done", "19.10.1970", "Pr. CIT", ""],
+  ["97025", "L. Sunita Rao", "13.09.1971", "Pr. CIT", ""],
+  ["98003", "Ashutosh Rajhans", "11.03.1971", "Pr. CIT", ""],
+  ["98004", "Smiti Samant", "24.08.1974", "Pr. CIT", ""],
+  ["98005", "Pankaj Jindal", "21.02.1971", "Pr. CIT", ""],
+  ["98006", "Vandana Ramachandran", "02.06.1975", "Pr. CIT", ""],
+  ["98007", "Surender Pal", "01.10.1971", "Pr. CIT", ""],
+  ["98008", "Sandeep Raj", "10.07.1974", "Pr. CIT", ""],
+  ["98010", "Pitambar Das", "16.07.1970", "Pr. CIT", ""],
+  ["98011", "Sanjeev Jain", "20.04.1973", "Pr. CIT", ""],
+  ["98013", "Muneesh Kumar", "18.09.1975", "Pr. CIT", ""],
+  ["98014", "Vinod Tanwani", "20.12.1972", "Pr. CIT", ""],
+  ["98015", "Anupam Kant Garg", "08.01.1973", "Pr. CIT", ""],
+  ["98016", "Karun Kant Ojha", "12.02.1972", "Pr. CIT", ""],
+  ["98017", "Anu Krishna Aggarwal", "08.02.1974", "Pr. CIT", ""],
+  ["98018", "Mamta Bansal", "06.03.1975", "Pr. CIT", ""],
+  ["98021", "G. Kanaujia", "30.06.1972", "Pr. CIT", ""],
+  ["98022", "M. Mathivanan", "30.07.1972", "Pr. CIT", ""],
+  ["98023", "N. Sathyamoorthy", "14.09.1971", "Pr. CIT", ""],
+  ["98024", "Sanjay Kumar Bharati", "24.09.1969", "Pr. CIT", ""],
+  ["98026", "Harjinder Singh", "03.05.1969", "Pr. CIT", ""],
+  ["98027", "Kumar Ajeet", "25.06.1972", "Pr. CIT", ""],
+  ["98028", "Jayant B. Jhaveri", "01.06.1966", "Pr. CIT", ""],
+  ["98029", "Naorem Banita Devi", "01.02.1969", "Pr. CIT", ""],
+  ["98030", "C. Chandrakanta", "25.06.1972", "Pr. CIT", ""],
+  ["98031", "Manish Kanojia", "24.05.1973", "Pr. CIT", ""],
+  ["98032", "Sanjeev Kumar Kashyap", "05.09.1971", "Pr. CIT", ""],
+  ["98033", "Mudavathu H. Naik", "10.06.1970", "Pr. CIT", ""],
+  ["98034", "Imokaba Jamir", "11.01.1973", "Pr. CIT", ""],
+  ["98035", "M. Vijay Kumar", "04.05.1969", "Pr. CIT", ""],
+  ["99001", "Ekta Vishnoi", "03.06.1974", "Pr. CIT", ""],
+  ["99003", "Rajeev Benjwal", "05.08.1972", "Pr. CIT", ""],
+  ["99005", "Shumana Sen", "26.01.1973", "Pr. CIT", ""],
+  ["99006", "Deepak Tiwari", "01.11.1974", "Pr. CIT", ""],
+  ["99008", "Neehar Ranjan Pandey", "12.05.1972", "Pr. CIT", ""],
+  ["99009", "Chittaranjan Dash", "01.06.1974", "Pr. CIT", ""],
+  ["99011", "Meera Srivastava", "09.03.1973", "Pr. CIT", ""],
+  ["99012", "Swapna Nanu Ambatt", "31.10.1973", "Pr. CIT", ""],
+  ["99013", "Naveen Gupta", "25.05.1974", "Pr. CIT", ""],
+  ["99015", "Shashi Bhushan Shukla", "20.08.1973", "Pr. CIT", ""],
+  ["99016", "Neeraja Pradhan", "12.09.1971", "Pr. CIT", ""],
+  ["99017", "Navneet Manohar", "24.06.1975", "Pr. CIT", ""],
+  ["99019", "Sanjog Kapoor", "04.08.1971", "Pr. CIT", ""],
+  ["99022", "Naina Soin Kapil", "28.06.1973", "Pr. CIT", ""],
+  ["99023", "Srujani Mohanty", "03.01.1973", "Pr. CIT", ""],
+  ["99024", "Ran Singh Yadav", "06.06.1969", "Pr. CIT", ""],
+  ["99025", "Ch. Venkata Gopi Nath", "14.08.1973", "Pr. CIT", ""],
+  ["99028", "M. Rajasekhar", "01.02.1971", "Pr. CIT", ""],
+  ["99029", "Naresh Saka", "19.08.1974", "Pr. CIT", ""],
+  ["99033", "S. Murali Mohan", "08.07.1968", "Pr. CIT", ""],
+  ["99034", "Vijay Kumar Chadha", "01.11.1970", "Pr. CIT", ""],
+  ["89048", "Alka Rajvanshi Jain", "12.12.1965", "CIT", ""],
+  ["89094", "Arun Kr. Tiwari", "18.07.1965", "CIT", ""],
+  ["90080", "Neera Malhotra", "28.09.1965", "CIT", ""],
+  ["91071", "Sanjay Kumar", "29.10.1965", "CIT", ""],
+  ["91098", "Shravan Kumar", "25.07.1968", "CIT", ""],
+  ["92001", "Ajay Chandra", "26.11.1967", "CIT", ""],
+  [
+    "92038",
+    "Sukesh Kumar Jain",
+    "20.02.1968",
+    "CCIT",
+    ""
+  ],
+  [
+    "92073",
+    "Tarun Seem",
+    "18.12.1966",
+    "CCIT",
+    ""
+  ],
+  ["93013", "Govind Singhal", "05.05.1965", "CIT", ""],
+  ["93055", "Amrish Bedi", "10.12.1966", "CIT", ""],
+  ["93061", "Ashok Kumar", "17.03.1965", "CIT", ""],
+  ["93083", "Sushil Kumar", "14.12.1967", "CIT", ""],
+  ["94087", "Dipak P. Ripote", "05.01.1966", "CIT", "ITAT"],
+  [
+    "95002",
+    "Rajesh Gupta",
+    "29.07.1969",
+    "Pr. CIT",
+    ""
+  ],
+  ["96002", "Saad Kidwai", "03.09.1971", "CIT", ""],
+  [
+    "96023",
+    "Sarabjeet Singh",
+    "16.12.1969",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "97004",
+    "Ritesh Parmar",
+    "17.03.1970",
+    "Pr. CIT",
+    ""
+  ],
+  ["97018", "A. S. Bindhu", "16.05.1969", "CIT", ""],
+  [
+    "98001",
+    "Namita S. Pandey",
+    "08.09.1972",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "98012",
+    "Neeraj Kumar",
+    "10.04.1972",
+    "Pr. CIT",
+    ""
+  ],
+  ["98019", "Praveen Kishore", "21.09.1972", "CIT", ""],
+  [
+    "98025",
+    "Samir A. Vakil",
+    "15.05.1974",
+    "Pr. CIT",
+    ""
+  ],
+  ["99030", "Anil Kumar P. Chaware", "04.01.1967", "CIT", ""],
+  [
+    "99035",
+    "Komal Krishna S",
+    "28.10.1972",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "99037",
+    "Aarsi Prasad",
+    "18.12.1969",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "99039",
+    "P. V. Pradeep Kumar",
+    "09.08.1969",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "99040",
+    "Hemant Kumar C. Leuva",
+    "01.08.1968",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "99041",
+    "Shekhar L. Gajbhiye",
+    "16.12.1972",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "99042",
+    "Sunil Gautam",
+    "22.01.1974",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "99044",
+    "Rajnish D. Burman",
+    "30.01.1973",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "99045",
+    "I. Kitto Zhimomi",
+    "22.03.1974",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "99031",
+    "Vilas V. Shinde",
+    "05.08.1972",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "00001",
+    "S. Praveena",
+    "04.04.1973",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "00002",
+    "Vinay Sinha",
+    "02.03.1976",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "00003",
+    "Sheodan Singh Bhadoria",
+    "01.03.1975",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "00004",
+    "Salil Mishra",
+    "15.04.1976",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "00006",
+    "Rohit Garg",
+    "03.01.1973",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "00009",
+    "Mohd. Salman Khan",
+    "05.01.1974",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "00010",
+    "Shaveta Nakra Datta",
+    "22.05.1975",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "00011",
+    "Sanjay Pandey",
+    "06.06.1972",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "00012",
+    "Deepshikha Sharma",
+    "28.09.1973",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "00013",
+    "Ritesh Misra",
+    "11.07.1970",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "00015",
+    "Nimisha Singh",
+    "25.05.1975",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "00017",
+    "Gaurav Batham",
+    "20.06.1974",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "00021",
+    "Ashim Kumar Modi",
+    "09.03.1976",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "00022",
+    "Prakhar Vipalava Gupta",
+    "01.03.1967",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "00023",
+    "Pravin Kumar Rawal",
+    "18.09.1974",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "00024",
+    "Manoj Kumar Mahar",
+    "01.07.1975",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "01001",
+    "Sanjay Dhariwal",
+    "19.10.1972",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "01002",
+    "Dharam Veer Singh",
+    "12.01.1974",
+    "Pr. CIT",
+    ""
+  ],
+  ["01003", "Sujit Kumar", "25.12.1970", "CIT", ""],
+  ["01004", "Ajai Pratap Singh", "01.09.1972", "CIT", ""],
+  [
+    "01005",
+    "Monika Dhami",
+    "29.10.1976",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "01006",
+    "Neelam Shukla",
+    "15.09.1973",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "01007",
+    "Satyasai Rath",
+    "03.07.1973",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "01008",
+    "P. Praveen Siddharth",
+    "05.08.1978",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "01010",
+    "Susan Thomas",
+    "09.11.1977",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "01011",
+    "A. S. Kumbhar",
+    "30.07.1974",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "01012",
+    "Manish Sareen",
+    "15.07.1974",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "01013",
+    "Dr. Sanjay Kumar Lal",
+    "11.09.1971",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "01014",
+    "Shri Prakash Dubey",
+    "17.10.1973",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "01015",
+    "Vijay Kumar Jaiswal",
+    "20.10.1974",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "01016",
+    "Vijay Babu Vasanta",
+    "18.10.1974",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "01017",
+    "Pradeep Kumar Meel",
+    "01.11.1975",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "01019",
+    "Rajib Jain",
+    "05.12.1975",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "01020",
+    "R. Clement Ramesh Kumar",
+    "25.05.1973",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "01021",
+    "Deshmukh S. Vishwas Rao",
+    "19.09.1970",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "01024",
+    "Kusum",
+    "23.12.1972",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "01025",
+    "K. Meghnath. Chowhan",
+    "17.12.1972",
+    "Pr. CIT",
+    ""
+  ],
+  [
+    "01026",
+    "Mudavathu N. Murthy Naik",
+    "04.08.1974",
+    "Pr. CIT",
+    ""
+  ],
+  ["011046", "R. N. Siddappaji", "30.06.1965", "CIT", ""],
+  ["02001", "Ann Mary Baby", "24.12.1976", "CIT", ""],
+  ["02002", "Richa Gaharwar", "18.09.1974", "CIT", ""],
+  ["02003", "Rajkumar Ghosh", "30.10.1972", "CIT", ""],
+  ["02004", "Ajay Malik", "04.08.1977", "CIT", ""],
+  ["02005", "Guru Prasad BL", "20.05.1975", "CIT", ""],
+  ["02006", "Sanjay Punglia", "15.04.1975", "CIT", ""],
+  ["02007", "Amisha S. Gupta", "06.04.1972", "CIT", ""],
+  ["02008", "Chetan P. S. Rao", "09.01.1976", "CIT", ""],
+  ["02009", "Shubhrata Prakash", "12.03.1974", "CIT", ""],
+  ["02010", "Surabhi Sharma", "29.03.1978", "CIT", ""],
+  ["02011", "Saravanan Babu", "18.08.1976", "CIT", ""],
+  ["02012", "Rajinder Kaur", "14.12.1973", "CIT", ""],
+  ["02014", "Jivandeep Singh Kahlon", "05.07.1974", "CIT", ""],
+  ["02515", "Amarjyoti Mazumdar", "27.01.1967", "CIT", ""],
+  ["02015", "Inoshi Sharma", "09.12.1976", "CIT", ""],
+  ["02016", "Ramapriya Raghavan", "25.09.1977", "CIT", ""],
+  ["02017", "Roopak Kumar", "25.07.1976", "CIT", ""],
+  ["02018", "Saroj Kumar Dubey", "10.01.1972", "CIT", ""],
+  ["02020", "Vivek Kumar Gupta", "29.11.1975", "CIT", ""],
+  ["02021", "Chabungbam Deepak Singh", "05.03.1976", "CIT", ""],
+  ["02023", "R. Ilavarasi", "05.11.1976", "CIT", ""],
+  ["02024", "Roy Jose V", "28.05.1972", "CIT", ""],
+  ["02025", "Ekta Jain", "05.02.1978", "CIT", ""],
+  ["02026", "Shailja Rai", "19.08.1976", "CIT", ""],
+  ["02027", "Md. Atahar H. Chowdhury", "01.02.1974", "CIT", ""],
+  ["02029", "Javed Akhtar", "02.09.1974", "CIT", ""],
+  ["02030", "Sanjeev Kumar Yadav", "14.10.1969", "CIT", ""],
+  ["02031", "Sarita Kumari", "01.10.1975", "CIT", ""],
+  ["02032", "C. V. Pavan Kumar", "24.05.1973", "CIT", ""],
+  ["02033", "M. Murali", "26.05.1977", "CIT", ""],
+  ["02035", "Nidhi Verma Singh", "16.02.1979", "CIT", ""],
+  ["02036", "Sanjeev Kaushal", "08.11.1971", "CIT", ""],
+  ["02037", "Kirtane Amol Bhimrao", "22.10.1975", "CIT", ""],
+  ["02038", "Nimesh Yadav", "29.10.1975", "CIT", ""],
+  ["02039", "Balasubramanian Jaya Ragavan", "13.06.1975", "CIT", ""],
+  ["02040", "G. Nantha Kumar", "10.04.1973", "CIT", ""],
+  ["02041", "Atiq Ahmad", "14.06.1974", "CIT", ""],
+  ["02042", "Battula Bala Krishna", "11.08.1971", "CIT", ""],
+  ["02043", "Santosh Kumar", "26.06.1978", "CIT", ""],
+  ["02044", "S. Palani Kumar", "28.05.1975", "CIT", ""],
+  ["02045", "Binod Kumar", "01.02.1973", "CIT", ""],
+  ["02547", "Sanjay Mukherjee", "04.09.1965", "CIT", ""],
+  ["02047", "Rakhi Vimal", "23.03.1978", "CIT", ""],
+  ["02548", "Sucheta Chattopadhyay Roy", "02.04.1967", "CIT", ""],
+  ["02048", "Rajitha Voruvuru", "26.07.1974", "CIT", ""],
+  ["02049", "Yogesh Vishnu Kamat", "23.04.1976", "CIT", ""],
+  ["02050", "Rahul Dhawan", "29.10.1973", "CIT", ""],
+  ["02051", "Deepak R. Lakshmipathy", "20.05.1975", "CIT", ""],
+  ["02052", "Vikas Keraba Suryawanshi", "15.06.1974", "CIT", ""],
+  ["02053", "M. Rajan", "25.05.1971", "CIT", ""],
+  ["02054", "Mahesh Kr. Deoram Akhade", "21.07.1975", "CIT", ""],
+  ["02058", "Sumer Singh Meena", "26.01.1978", "CIT", ""],
+  ["02059", "Manjunath Karkihali (Dr.)", "20.07.1969", "CIT", ""],
+  ["02022", "Rahul Kumar", "15.04.1974", "CIT", ""],
+  ["02573", "Amitava Bhattacharyya", "29.09.1968", "CIT", ""],
+  ["02574", "Rakesh Kr. Das", "16.02.1965", "CIT", ""],
+  ["02575", "Guru Bhashyam", "25.06.1966", "CIT", ""],
+  ["02589", "P. R. Mane", "20.10.1965", "CIT", ""],
+  ["02598", "H. B. Ninawe", "18.10.1965", "CIT", ""],
+  ["03001", "Jaishree Sharma", "04.12.1976", "CIT", ""],
+  ["03501", "S. Venkatramani", "28.12.1965", "CIT", ""],
+  ["03002", "Zeenia Handa", "27.10.1978", "CIT", ""],
+  ["03003", "Manu Tentiwal", "21.09.1976", "CIT", ""],
+  ["03004", "Bare Ganesh Sudhakar", "31.03.1976", "CIT", ""],
+  ["03006", "Rohit Sharma", "31.01.1975", "CIT", ""],
+  ["03007", "Sapna Bhatia", "08.05.1975", "CIT", ""],
+  ["03009", "Praveen Karanth", "30.06.1975", "CIT", ""],
+  ["03010", "Vrunda Manohar Desai", "15.02.1978", "CIT", ""],
+  ["03011", "Rinku Singh", "30.12.1973", "CIT", ""],
+  ["03012", "Anita Rupavataram", "03.10.1978", "CIT", ""],
+  ["03014", "Prashant Kumar Jha", "11.09.1976", "CIT", ""],
+  ["03015", "Monika Sharma", "21.02.1975", "CIT", ""],
+  ["03017", "Vimal Anand", "01.01.1975", "CIT", ""],
+  ["03018", "L. V. Bhaskara Reddy", "02.06.1974", "CIT", ""],
+  ["03019", "Anjula Jain", "02.07.1973", "CIT", ""],
+  ["03020", "Krishna Gopal Goyal", "15.06.1978", "CIT", ""],
+  ["03021", "Suboorul Hasan Usmani", "10.11.1978", "CIT", ""],
+  ["03022", "Anil Kumar Bharadwaj", "01.10.1976", "CIT", ""],
+  ["03023", "Vivek Anand Ojha", "04.05.1977", "CIT", ""],
+  ["03024", "Shailendra Sharma", "30.04.1976", "CIT", ""],
+  ["03025", "Neetika Bansal", "21.10.1975", "CIT", ""],
+  ["03026", "Ranu Mukherjee", "12.11.1976", "CIT", ""],
+  ["03027", "Sowmya Achar H. L.", "12.06.1977", "CIT", ""],
+  ["03028", "Solgy Jose T. Kottaram", "28.10.1976", "CIT", ""],
+  ["03029", "Chandra Vijay", "02.08.1972", "CIT", ""],
+  ["03030", "Vivek Sharma", "18.08.1977", "CIT", ""],
+  ["03032", "N. Senthil Kumar", "22.11.1973", "CIT", ""],
+  ["03033", "Sanjay Kumar", "10.01.1972", "CIT", ""],
+  ["03035", "Pushpendra Singh Choudhary", "13.03.1979", "CIT", ""],
+  ["03036", "Vivek Verma", "25.06.1976", "CIT", ""],
+  ["03037", "Alok Kumar", "15.07.1975", "CIT", ""],
+  ["03038", "Udaya Bhaskar Jakke", "27.04.1976", "CIT", ""],
+  ["03039", "Rakesh Ranjan", "01.07.1974", "CIT", ""],
+  ["03040", "Pankaj Kumar", "01.04.1977", "CIT", ""],
+  ["03540", "Rakesh Kumar Gupta", "25.11.1965", "CIT", ""],
+  ["03541", "A. N. Misra", "01.09.1966", "CIT", ""],
+  ["03043", "T. Sankar", "11.05.1975", "CIT", ""],
+  ["03044", "Manoj Kumar", "23.12.1975", "CIT", ""],
+  ["03046", "Sunku Srinivasu", "28.03.1971", "CIT", ""],
+  ["03048", "Prasanth V. K.", "08.11.1977", "CIT", ""],
+  ["03049", "Rajesh Kumar", "08.01.1970", "CIT", ""],
+  ["03050", "Suresh Sivanandan", "30.05.1972", "CIT", ""],
+  ["03051", "Arvind Kumar", "25.09.1976", "CIT", ""],
+  ["03052", "Manda Narmada", "29.05.1975", "CIT", ""],
+  ["03052A", "Satish Meriga", "21.03.1978", "CIT", ""],
+  ["03053", "Alka Gautam", "22.12.1973", "CIT", ""],
+  ["03054", "Sonam Chombay", "25.04.1977", "CIT", ""],
+  ["03055", "Esther Ninghauvung Hanghal", "04.04.1981", "CIT", ""],
+  ["03056", "Prathvi Raj Meena", "01.01.1972", "CIT", ""],
+  ["03058", "Om Prakash Meena", "01.11.1972", "CIT", ""],
+  ["03013", "K. M. Mahesh", "30.12.1977", "CIT", ""],
+  ["04002", "Ravi Prakash", "26.11.1976", "CIT", ""],
+  ["04003", "Pankaj Kumar", "15.11.1977", "CIT", ""],
+  ["04004", "Neha Chaudhary", "08.07.1979", "CIT", ""],
+  ["04005", "Rajesh Ojha", "11.09.1977", "CIT", ""],
+  ["04006", "Shalini Verma", "01.07.1975", "CIT", ""],
+  ["04007", "Somanath S. Ukkali", "11.04.1977", "CIT", ""],
+  ["04008", "Madhu Malti Ghosh", "20.08.1974", "CIT", ""],
+  ["04010", "Byomakesh Pradipta Kumar Panda", "27.06.1977", "CIT", ""],
+  ["04011", "Utture Mallikarjun Mahalingapp", "28.07.1978", "CIT", ""],
+  ["04012", "Mohammed Rizwan", "01.04.1975", "CIT", ""],
+  ["04013", "Dheeraj Garg", "11.10.1978", "CIT", ""],
+  ["04014", "Sanjay Joseph", "30.05.1975", "CIT", ""],
+  ["04016", "Girish Bali", "12.07.1979", "CIT", ""],
+  ["04017", "Amrita Singh", "14.06.1977", "CIT", ""],
+  ["04018", "Neil Jain", "29.11.1975", "CIT", ""],
+  ["04019", "R. Mohan Reddy", "13.12.1977", "CIT", ""],
+  ["04020", "Bharat Bhushan Garg", "05.02.1978", "CIT", ""],
+  ["04021", "Maurya Pratap", "29.09.1976", "CIT", ""],
+  ["04022", "Shramdeep Sinha", "30.06.1977", "CIT", ""],
+  ["04023", "Prajna Paramita", "01.06.1979", "CIT", ""],
+  ["04024", "Riddhi Mishra", "25.06.1980", "CIT", ""],
+  ["04025", "Ravinder Sindhu", "19.01.1977", "CIT", ""],
+  ["04027", "Manisha Kinnu", "18.01.1977", "CIT", ""],
+  ["04028", "Abhishek Pal Garg", "02.02.1979", "CIT", ""],
+  ["04029", "Vivek Aggarwal", "18.07.1978", "CIT", ""],
+  ["04030", "Katragadda Haritha", "15.06.1980", "CIT", ""],
+  ["04533", "Sudhendu Das", "25.02.1965", "CIT", ""],
+  ["04031", "Salunke Sandipkumar Ratan", "11.06.1977", "CIT", ""],
+  ["04534", "Sunil Kumar Agarwala", "30.04.1965", "CIT", ""],
+  ["04032", "Prakash L. Pathade", "04.06.1980", "CIT", ""],
+  ["04033", "Shashi Saklani", "05.01.1980", "CIT", ""],
+  ["04034", "Suman Malik", "20.04.1978", "CIT", ""],
+  ["04035", "Balvinder Kaur", "24.02.1978", "CIT", ""],
+  ["04037", "Ved Prakash Mishra", "01.03.1974", "CIT", ""],
+  ["04038", "Sambit Mishra", "26.01.1979", "CIT", ""],
+  ["04041", "Rohit Mehra", "25.05.1977", "CIT", ""],
+  ["04547", "Narendra Singh", "08.07.1967", "CIT", ""],
+  ["04043", "Vikash Kr. Agarwal", "24.12.1975", "CIT", ""],
+  ["04044", "Shailesh Thakur", "11.01.1980", "CIT", ""],
+  ["04046", "B. Satyanarayana Raju", "15.08.1975", "CIT", ""],
+  ["04047", "Amit Kr. Sharma", "21.09.1975", "CIT", ""],
+  ["04048", "Md. Gayasuddin Ansari", "15.01.1977", "CIT", ""],
+  ["04049", "Rishpal Bedi", "18.05.1980", "CIT", ""],
+  ["04050", "Anand Kr. Singh", "01.07.1975", "CIT", ""],
+  ["04051", "S. R. Karuppusamy", "04.12.1977", "CIT", ""],
+  ["04052", "Manjeet Singh", "08.01.1976", "CIT", ""],
+  ["04053", "Sumit Kumar", "01.03.1978", "CIT", ""],
+  ["04054", "Shovan Krishna Sahu", "07.07.1972", "CIT", ""],
+  ["04055", "Kailash Dan Ratnoo", "01.01.1977", "CIT", ""],
+  ["04056", "Robin Rawal", "12.10.1974", "CIT", ""],
+  ["04057", "Vijay Kumar Soni", "03.06.1976", "CIT", ""],
+  ["04564", "Meenakshi Vohra", "20.04.1966", "CIT", ""],
+  ["04058", "Mahesh Kumar", "02.08.1975", "CIT", ""],
+  ["04059", "Santosh C. Mankoskar Dr", "05.06.1974", "CIT", ""],
+  ["04060", "Balakrishnan N.", "12.05.1978", "CIT", ""],
+  ["04061", "Manish Kumar Singh", "01.10.1977", "CIT", ""],
+  ["04063", "Dhule Kishor Sakharam", "17.08.1976", "CIT", ""],
+  ["04064", "K. C. Selvamani", "04.04.1976", "CIT", ""],
+  ["04065", "Mukundraj Marutirao Chate", "16.06.1973", "CIT", ""],
+  ["04066", "Vijay Kumar Singh", "11.06.1973", "CIT", ""],
+  ["04067", "Gargi Sharma Goel", "10.08.1981", "CIT", ""],
+  ["04068", "Eyas Ahamed M.", "21.05.1975", "CIT", ""],
+  ["04069", "Shrikant Namdeo", "15.06.1980", "CIT", ""],
+  ["04070", "Bharti Mahajan", "29.03.1980", "CIT", ""],
+  ["04071", "Durga Dutt", "13.01.1979", "CIT", ""],
+  ["04073", "G. Hukugha Sema", "23.09.1973", "CIT", ""],
+  ["04582", "Satyajit Mandal", "19.04.1967", "CIT", ""],
+  ["04074", "Pophare Ashish Vinayak", "04.05.1974", "CIT", ""],
+  ["04583", "Biswanth Das", "06.02.1966", "CIT", ""],
+  ["04584", "Pradip Kr. Mondol", "29.11.1966", "CIT", ""],
+  ["04077", "Rajesh Kumar", "02.01.1974", "CIT", ""],
+  ["04078", "Parveen Kumar", "14.11.1978", "CIT", ""],
+  ["04079", "S. Senthil Kumaran", "26.05.1974", "CIT", ""],
+  ["04589", "B. Y. Chavan", "01.06.1966", "CIT", ""],
+  ["04080", "Shiva Sewak", "05.07.1974", "CIT", ""],
+  ["04081", "Sundaresan S.", "04.10.1978", "CIT", ""],
+  ["04082", "Anil Dhaka", "03.07.1979", "CIT", ""],
+  ["04083", "Arvind Kumar", "20.10.1977", "CIT", ""],
+  ["04085", "Puja Raj", "03.03.1975", "CIT", ""],
+  ["04086", "Mrinalini Kaur Sapra", "13.10.1979", "CIT", ""],
+  ["04087", "Nongothung Jungio", "03.03.1975", "CIT", ""],
+  ["04088", "Prashant Gadekar", "04.05.1972", "CIT", ""],
+  ["04089", "M. K. Biju", "06.02.1978", "CIT", ""],
+  ["04090", "Jai Singh", "08.04.1977", "CIT", ""],
+  ["04091", "Imlimeren Jamir", "04.10.1980", "CIT", ""],
+  ["04603", "Mrityunjoy Barnwal", "03.02.1965", "CIT", ""],
+  ["04092", "Kachoo Mahboob Ali Khan", "06.03.1967", "CIT", ""],
+  ["04093", "Garima Chaudhary", "23.02.1979", "CIT", ""],
+  ["04094", "Ankush Kapoor", "06.10.1976", "CIT", ""],
+  ["04095", "Lavidiya Jeevan Lal", "20.07.1977", "CIT", ""],
+  ["04096", "Vijay Choudhary", "02.10.1972", "CIT", ""],
+  ["04098", "Patel Keyur M.", "06.10.1976", "CIT", ""],
+  ["04100", "Pradeep Shoury Arya", "02.10.1972", "CIT", ""],
+  ["04102", "T. James Singson", "28.07.1972", "CIT", ""],
+  ["04104", "B. Srinivas Kumar", "24.09.1972", "CIT", ""],
+  ["04105", "Ila Mahendrasinh Parmar", "19.02.1975", "CIT", ""],
+  ["04106", "Vijaya Prabha S.", "10.05.1976", "CIT", ""],
+  ["04107", "S. Maruthu Pandian", "04.12.1977", "CIT", ""],
+  ["05001", "Aseem Sharma", "04.11.1975", "CIT", ""],
+  ["05003", "Ritu Singh Sharma", "04.10.1980", "CIT", ""],
+  ["05004", "Sarish Kumar Irukulla", "20.12.1974", "CIT", ""],
+  ["05005", "Abhishek Sharma", "05.08.1978", "CIT", ""],
+  ["05006", "Ashis Chandra Mohanty", "15.07.1976", "CIT", ""],
+  ["05007", "Rakesh Jha", "19.12.1975", "CIT", ""],
+  ["05008", "Dr. Vedanshu Tripathi", "14.04.1976", "CIT", ""],
+  ["05509", "Pijush Mukherjee", "27.10.1965", "CIT", ""],
+  ["05009", "Vinod Kr. Agrawal", "02.09.1974", "CIT", ""],
+  ["05510", "Prakash Nath Barnwal", "26.12.1965", "CIT", ""],
+  ["05010", "Radha Katyal", "10.09.1971", "CIT", ""],
+  ["05011", "Amit Jain", "19.08.1975", "CIT", ""],
+  ["05012", "Lovish Kumar", "17.09.1981", "CIT", ""],
+  ["05013", "Gudrun Nehar", "03.03.1977", "CIT", ""],
+  ["05014", "Anima Barnwal", "25.10.1977", "CIT", ""],
+  ["05015", "Nayani Swapna", "21.05.1979", "CIT", ""],
+  ["05518", "Rajat Mitra", "14.12.1965", "CIT", ""],
+  ["05519", "Sanjit Kr. Das", "01.01.1967", "CIT", ""],
+  ["05520", "Subhendu Datta", "19.09.1966", "CIT", ""],
+  ["05020", "Sanyogita Nagpal", "02.06.1980", "CIT", ""],
+  ["05021", "Gaurav Dudeja", "12.10.1977", "CIT", ""],
+  ["05022", "Nikhil Varma", "01.12.1978", "CIT", ""],
+  ["05025", "Anurag Sharma", "11.04.1980", "CIT", ""],
+  ["05026", "A. Sasi Kumar", "19.01.1975", "CIT", ""],
+  ["05027", "Shital Dholakia", "29.09.1976", "CIT", ""],
+  ["05028", "Vachashpati Tripathi", "09.09.1977", "CIT", ""],
+  ["05029", "Jaya Choudhary", "01.07.1980", "CIT", ""],
+  ["05530", "Sourabh Kumar Chatterjee", "08.03.1967", "CIT", ""],
+  ["05030", "Ritu Sharma", "14.02.1980", "CIT", ""],
+  ["05031", "Ashish Kumar Heliwal", "25.08.1978", "CIT", ""],
+  ["05032", "Ravi Kant Gupta", "12.11.1981", "CIT", ""],
+  ["05034", "Ravinder Maini", "11.05.1980", "CIT", ""],
+  ["05035", "C. Vatchala", "27.09.1976", "CIT", ""],
+  ["05036", "Mukesh Kumar Jha", "28.04.1977", "CIT", ""],
+  ["05037", "Vipul Agarwal", "19.11.1980", "CIT", ""],
+  ["05038", "Baljeet Kaur", "20.07.1983", "CIT", ""],
+  ["05040", "Appu Joseph Jose", "31.08.1975", "CIT", ""],
+  ["05041", "Satya Pal Kumar", "25.02.1979", "CIT", ""],
+  ["05042", "Harshad Sudhir Vengurlekar", "11.01.1979", "CIT", ""],
+  ["05043", "Shiddaramappa Kappattanavar", "20.07.1976", "CIT", ""],
+  ["05044", "Pavan Kumar Beerla", "04.09.1977", "CIT", ""],
+  ["05045", "Sk. Zafarul Haque Tanweer", "19.01.1976", "CIT", ""],
+  ["05546", "R. A. Dhyani", "25.06.1966", "CIT", ""],
+  ["05046", "Nishtha Tiwari", "16.05.1980", "CIT", ""],
+  ["05047", "Rajat Kapoor", "06.11.1980", "CIT", ""],
+  ["05048", "Dayainder Singh Sidhu", "22.11.1974", "CIT", ""],
+  ["05049", "Anshuman Sharma", "21.01.1979", "CIT", ""],
+  ["05050", "Vandana Vijay Mohite", "15.03.1978", "CIT", ""],
+  ["05051", "Nikhil Kumar Govila", "15.05.1976", "CIT", ""],
+  ["05052", "Nitin Ragunath Waghmode", "01.10.1980", "CIT", ""],
+  ["05053", "S. Renga Rajan", "05.07.1979", "CIT", ""],
+  ["05054", "Sunil Kumar Yadav", "05.04.1977", "CIT", ""],
+  ["05055", "Arun Kumar Yadav", "25.09.1973", "CIT", ""],
+  ["05056", "Jadhav Shukracharya Crupacharya", "21.05.1979", "CIT", ""],
+  ["05057", "Aakash Dewangan", "29.11.1981", "CIT", ""],
+  ["05058", "J. Saravanan", "24.03.1979", "CIT", ""],
+  ["05060", "Akhilendra Pratap Yadaw", "10.08.1977", "CIT", ""],
+  ["05061", "Vivek Anand Perapurna", "25.07.1976", "CIT", ""],
+  ["05063", "P. Dhivahar", "19.06.1978", "CIT", ""],
+  ["05065", "Ajay Kr. Keshari", "05.02.1972", "CIT", ""],
+  ["05566", "Rudolpha N. Dsouza", "21.05.1965", "CIT", "VRS w.e.f. 19.03.2025"],
+  ["05067", "Jeetendra Kumar", "21.04.1980", "CIT", ""],
+  ["05074", "Azhar Zain Vayal Parambath", "04.04.1975", "CIT", ""],
+  ["05075", "Mazhar Akram", "22.04.1978", "CIT", ""],
+  ["05076", "Nischal B.", "10.12.1977", "CIT", ""],
+  ["05077", "Love Kumar", "28.02.1981", "CIT", ""],
+  ["05078", "Srinivasan A.", "07.06.1976", "CIT", ""],
+  ["05079", "Sridhar E.", "25.05.1982", "CIT", ""],
+  ["05080", "Dr. Pramod Nikalje", "29.06.1979", "CIT", ""],
+  ["05581", "Nilu Jaggi", "04.10.1965", "CIT", ""],
+  ["05081", "V. Nandakumar", "21.09.1974", "CIT", ""],
+  ["05083", "Sri Nandini Das", "15.08.1975", "CIT", ""],
+  ["05085", "Rajesh Kumar", "27.03.1975", "CIT", ""],
+  ["05086", "Puneet Kumar", "26.12.1977", "CIT", ""],
+  ["05088", "Shiv Swaroop Singh", "21.09.1972", "CIT", ""],
+  ["05089", "J. Premanand", "10.02.1979", "CIT", ""],
+  ["05090", "N. Padmanaban", "06.07.1977", "CIT", ""],
+  ["05091", "Nathala Ravi Babu", "26.06.1974", "CIT", ""],
+  ["05092", "Rajesh Chandra", "26.09.1970", "CIT", ""],
+  ["05093", "Darsi Suman Ratnam", "22.08.1971", "CIT", ""],
+  ["05094", "Dr. Shankar Prasad K.", "14.01.1974", "CIT", ""],
+  ["05095", "Debashis Majumder", "05.01.1978", "CIT", ""],
+  ["05096", "Kamlesh Gandalal Makwana", "14.07.1970", "CIT", ""],
+  ["05097", "Kailas P Gaikwad", "01.03.1978", "CIT", ""],
+  ["05099", "Neena Jeph", "10.10.1980", "CIT", ""],
+  ["05100", "Shravan Kumar Meena", "04.10.1975", "CIT", ""],
+  ["05101", "Ramesha G.", "01.06.1982", "CIT", ""],
+  ["05602A", "D. J. Prabhakar Anand", "27.07.1966", "CIT", ""],
+  ["05102", "N. G. Joseph Gangte", "02.02.1978", "CIT", ""],
+  ["05103", "Ramakrishna Bandi", "16.08.1976", "CIT", ""],
+  ["05104", "Sita Ram Meena", "15.06.1977", "CIT", ""],
+  ["05105", "H. Ananda", "01.06.1970", "CIT", ""],
+  ["05106", "Mahesh Thakur", "28.07.1978", "CIT", ""],
+  ["03041", "Kanhiya Lal Kanak", "25.09.1974", "CIT", ""],
+  ["05064", "Yamini", "01.03.1979", "CIT", ""],
+  ["05072", "Dr. S. Pandian", "18.12.1973", "CIT", ""],
+  ["05626", "M. K. Jain", "29.03.1966", "CIT", ""],
+  ["05630", "Sanjay Kumar", "20.02.1966", "CIT", ""],
+  ["05635", "S. L. Anuragi", "12.07.1965", "CIT", ""],
+  ["06001", "Awijit Rakshit", "16.09.1981", "CIT", ""],
+  ["06002", "Rajesh Kumar Mishra", "27.05.1977", "CIT", ""],
+  ["06003", "Rajdeep Singh", "19.08.1980", "CIT", ""],
+  ["06004", "Hemant Gupta", "05.09.1980", "CIT", ""],
+  ["06005", "Amit Kumar Singh", "05.10.1979", "CIT", ""],
+  ["06006", "Bedobani Chaudhuri", "21.01.1980", "CIT", ""],
+  ["06007", "Sudhanshu Dhar Mishra", "06.11.1979", "CIT", ""],
+  ["06008", "Surabhi Sharma", "16.02.1981", "CIT", ""],
+  ["06009", "Alok Malviya", "29.05.1979", "CIT", ""],
+  ["06010", "Kalpana Singh", "15.01.1981", "CIT", ""],
+  ["06011", "Roli Khare", "14.01.1980", "CIT", ""],
+  ["06012", "Ajay Modi", "23.12.1978", "CIT", ""],
+  ["06013", "Priyanka Singh", "26.11.1982", "CIT", ""],
+  ["06014", "Richa Rastogi", "22.09.1978", "CIT", ""],
+  ["06015", "Rukmani Attri", "23.08.1978", "CIT", ""],
+  ["06016", "Prasoon Kabra", "28.09.1980", "CIT", ""],
+  ["06018", "Abhishek Kumar", "02.10.1983", "CIT", ""],
+  ["06019", "Bhanwar Singh Ratnoo", "13.01.1976", "CIT", ""],
+  ["06020", "Rajeev Kumar", "05.04.1977", "CIT", ""],
+  ["06021", "Khairnar Amol Bharat", "16.05.1977", "CIT", ""],
+  ["06022", "Md. Shadab Ahmed", "01.03.1979", "CIT", ""],
+  ["06023", "Manu Chaurasia", "02.05.1976", "CIT", ""],
+  ["06024", "Raghuveer Madanappa", "15.03.1975", "CIT", ""],
+  ["06025", "Ram Kumar Yadava", "15.08.1972", "CIT", ""],
+  ["06026", "Kumar Pranav", "01.01.1973", "CIT", ""],
+  ["06027", "Subash K.R. (Dr.)", "24.10.1975", "CIT", ""],
+  ["06028", "Rajat Kumar Kureel", "28.07.1975", "CIT", ""],
+  ["06029", "Umesh Chandra Bharti", "02.01.1977", "CIT", ""],
+  ["06030", "Tshering Ongda", "22.01.1979", "CIT", ""],
+  ["06031", "Poonam Sharma", "04.07.1980", "CIT", ""],
+  ["06548", "Satya Prakash R. Singh", "24.09.1965", "CIT", ""],
+  ["065GWA", "Milind V. Patil", "21.11.1965", "CIT", ""],
+  ["06555", "Sudha Ramchandran", "01.06.1966", "CIT", ""],
+  ["06556", "Agnes Puthooran Thomas", "21.01.1966", "CIT", ""],
+  ["06574", "Ravinder Kumar Mittal", "10.10.1965", "CIT", ""],
+  ["06595", "Sandip Sen Gupta", "29.11.1967", "CIT", ""],
+  ["06605", "Divakr Chakraborty", "03.02.1965", "CIT", ""],
+  ["06623", "A. R. Rewar", "01.10.1966", "CIT", ""],
+  ["06634", "Chandan Das", "19.12.1965", "CIT", ""],
+  ["06639", "Sailen Samaddar", "21.01.1971", "CIT", ""],
+  ["06640", "Dr. Anup Bishwas", "01.09.1968", "CIT", ""],
+  ["06647", "Rajendra Ramdas Chandekar", "24.07.1967", "CIT", ""],
+  ["06657", "S. P. G. Mudaliar", "09.12.1966", "CIT", ""],
+  ["07001", "Namita Khurana", "18.10.1981", "CIT", ""],
+  ["07002", "Mini Chandran U.", "05.04.1981", "CIT", ""],
+  ["07005", "Shweta Mishra", "15.10.1980", "CIT", ""],
+  ["07008", "Praveen Verma", "09.09.1981", "CIT", ""],
+  ["07009", "Apoorva Bhardwaj", "08.08.1980", "CIT", ""],
+  ["07010", "V. Vidhyadhar", "30.01.1977", "CIT", ""],
+  ["07012", "Saurabh Singh", "07.01.1982", "CIT", ""],
+  ["07013", "Arju Garodia", "05.12.1979", "CIT", ""],
+  ["07014", "Sita Shrivastava", "01.07.1980", "CIT", ""],
+  ["07015", "N. Hemalatha", "12.04.1981", "CIT", ""],
+  ["07016", "Amit Katoch", "18.03.1978", "CIT", ""],
+  ["07517", "Raja Sen Gupta", "14.11.1965", "CIT", ""],
+  ["07017", "Manish Kumar Jha", "15.01.1978", "CIT", ""],
+  ["07018", "Sumit Kumar Verma", "11.09.1978", "CIT", ""],
+  ["07019", "Divya K. J.", "07.02.1981", "CIT", ""],
+  ["07520", "Sanjay Paul", "30.09.1965", "CIT", ""],
+  ["07020", "Alok Singh", "02.09.1979", "CIT", ""],
+  ["07021", "Raman Garg", "25.08.1979", "CIT", ""],
+  ["07022", "Geetinder Mann", "14.12.1983", "CIT", ""],
+  ["07523", "Anidya Kr. Bandyppadhyay", "20.05.1967", "CIT", ""],
+  ["07023", "S. Sundar Rajan", "15.12.1980", "CIT", ""],
+  ["07024", "Shaurya Shashwat Shukla", "06.05.1980", "CIT", ""],
+  ["07025", "Veni Raj", "02.05.1978", "CIT", ""],
+  ["07026", "Mahender Bishnoi", "12.08.1980", "CIT", ""],
+  ["07527", "Gautam Pattra", "16.12.1966", "CIT", ""],
+  ["07528", "Arun Kanti Dutta", "07.05.1968", "CIT", ""],
+  ["07028", "Rajat Mittal", "20.03.1980", "CIT", ""],
+  ["07529", "Ashim Kumar Chakraborty", "28.06.1967", "CIT", ""],
+  ["07029", "Anup Singh", "30.06.1981", "CIT", ""],
+  ["07531", "Rajat Dutta", "24.07.1967", "CIT", ""],
+  ["07031", "Sudhanshu Shekhar", "01.03.1982", "CIT", ""],
+  ["07532", "Sanat Kumar Raha", "08.11.1967", "CIT", ""],
+  ["07032", "Deepti Chandola", "08.04.1980", "CIT", ""],
+  ["07533", "Pranab Kumar Koley", "18.02.1970", "CIT", ""],
+  ["07033", "Vaibhav Jain", "04.10.1979", "CIT", ""],
+  ["07534", "Arup Chatterjee", "30.11.1967", "CIT", ""],
+  ["07034", "Mahesh Gopinath Jiwade", "13.12.1978", "CIT", ""],
+  ["07035", "Anchal Khandelwal", "02.06.1980", "CIT", ""],
+  ["07036", "Runi Pal", "04.02.1977", "CIT", ""],
+  ["07037", "Pankaj Srivastava", "05.05.1977", "CIT", ""],
+  ["07039", "Koushlendra Tewari", "25.09.1976", "CIT", ""],
+  ["07040", "Vikrant Pal Singh", "20.04.1978", "CIT", ""],
+  ["07041", "Amaninder Singh Dhindsa", "22.04.1978", "CIT", ""],
+  ["07042", "Bipin C. N.", "04.05.1977", "CIT", ""],
+  ["07043", "Amit Kumar Jain", "04.09.1979", "CIT", ""],
+  ["07044", "Mundhe Vishwas Sopanrao", "24.01.1980", "CIT", ""],
+  ["07045", "M. Anitha", "03.07.1980", "CIT", ""],
+  ["07046", "Prashant Ranjan", "11.03.1979", "CIT", ""],
+  ["07047", "Saurabh Kumar Rai", "18.11.1978", "CIT", ""],
+  ["07048", "Dr. Mukesh Jain", "26.03.1982", "CIT", ""],
+  ["07049", "Amaresh Kumar Tiwari", "11.03.1980", "CIT", ""],
+  ["07050", "M. S. Nethra Pal", "23.06.1980", "CIT", ""],
+  ["07051", "Manav Bansal", "27.10.1979", "CIT", ""],
+  ["07053", "Shahnawaz Ul Rahman", "22.07.1982", "CIT", ""],
+  ["07554", "Beena Santosh", "25.02.1966", "CIT", ""],
+  ["07054", "Ram Tiwari", "20.10.1977", "CIT", ""],
+  ["07055", "Amit Dua", "07.10.1977", "CIT", ""],
+  ["07056", "Deshpande Saurabh Girish", "08.05.1981", "CIT", ""],
+  ["07557", "Arvind G. Desai", "04.03.1965", "CIT", ""],
+  ["07057", "R. S. Arvindhakshan", "29.04.1982", "CIT", ""],
+  ["07059", "Ram Prakash Maurya", "12.07.1984", "CIT", ""],
+  ["07560", "R. K. Agarwal", "14.03.1966", "CIT", ""],
+  ["07060", "Monika Rana/Singh", "19.08.1983", "CIT", ""],
+  ["07060A", "Vikas Singh", "19.06.1979", "CIT", ""],
+  ["07061", "Laganpreet Sandhu", "03.03.1980", "CIT", ""],
+  ["07062", "Farhat Khan", "18.08.1978", "CIT", ""],
+  ["07063", "Sandip Kumar Mishra", "16.06.1978", "CIT", ""],
+  ["07064", "Aditya Shukla", "20.06.1981", "CIT", ""],
+  ["07065", "Ashish Tripathi", "05.08.1981", "CIT", ""],
+  ["07066", "Virender Singh", "03.05.1980", "CIT", ""],
+  ["07567", "Sanjay Kumar", "04.08.1966", "CIT", ""],
+  ["07067", "Rajesh Mahajan", "28.11.1977", "CIT", ""],
+  ["07068", "Shinde Sudhakar Namdeo", "25.05.1979", "CIT", ""],
+  ["07069", "Suman Kumar", "01.03.1977", "CIT", ""],
+  ["07070", "Renuga Devi P.", "07.05.1977", "CIT", ""],
+  ["07071", "H. Kabila", "17.04.1982", "CIT", ""],
+  ["07072", "Kirti Sankratyayan", "26.06.1977", "CIT", ""],
+  ["07073", "Ram Prakash Rastogi", "17.02.1977", "CIT", ""],
+  ["07074", "Yashvendra Singh", "18.11.1980", "CIT", ""],
+  ["07075", "C. Yamuna", "01.12.1978", "CIT", ""],
+  ["07076", "Raghu Nath", "05.02.1975", "CIT", ""],
+  ["07577", "N. Gopi Krishna", "28.04.1965", "CIT", ""],
+  ["07077", "Shabana Parveen", "11.06.1974", "CIT", ""],
+  ["07578", "G. Johnson", "15.06.1965", "CIT", ""],
+  ["07078", "Meenakashi Dohare", "30.05.1982", "CIT", ""],
+  ["07079", "Jenardhanan V.", "03.02.1975", "CIT", ""],
+  ["07080", "V. Justin", "25.05.1975", "CIT", ""],
+  ["07081", "Rajni Rani Roy", "29.08.1977", "CIT", ""],
+  ["07082", "Samrat Rahi", "01.03.1984", "CIT", ""],
+  ["07083", "Tarundeep Kaur", "29.01.1982", "CIT", ""],
+  ["07084", "Pavuna Sundari E.", "12.06.1978", "CIT", ""],
+  ["07085", "Anoop Singh", "22.01.1978", "CIT", ""],
+  ["07086", "Maimun Nisha Ansari", "13.08.1978", "CIT", ""],
+  ["07087", "B. Ramanjaneyulu", "26.04.1981", "CIT", ""],
+  ["07588", "Brij Mohan Singh", "01.06.1965", "CIT", ""],
+  ["07088", "Purushottam Kumar", "01.06.1979", "CIT", ""],
+  ["07089", "Vijyendra Kumar", "16.12.1978", "CIT", ""],
+  ["07090", "Amit Ashokrao Bobde", "23.04.1979", "CIT", ""],
+  ["07592", "Sher Singh", "09.11.1966", "CIT", ""],
+  ["07092", "Shivanand H. Kalakeri", "21.07.1975", "CIT", ""],
+  ["07093", "Das Rignesh Kalpesh", "26.03.1978", "CIT", ""],
+  ["07094", "Murali Mohan M.", "09.04.1980", "CIT", ""],
+  ["07095", "Sanjai Kumar Yadav", "02.12.1978", "CIT", ""],
+  ["07096", "B. Naveen Kumar", "15.05.1978", "CIT", ""],
+  ["07097", "Amit Raj", "02.12.1979", "CIT", ""],
+  ["07097A", "P. Muthushankar", "17.06.1979", "CIT", ""],
+  ["07599", "Yogesh Kumar Sharma", "20.06.1968", "CIT", ""],
+  ["07099", "Rajesh Kumar Yadav", "30.10.1980", "CIT", ""],
+  ["07100", "Kiran D.", "10.04.1979", "CIT", ""],
+  ["07101", "Narendra Kumar Naik", "15.01.1980", "CIT", ""],
+  ["07102", "Abhishek Meshram", "15.09.1981", "CIT", ""],
+  ["07603", "A. R. V. Srinivasan", "04.03.1965", "CIT", ""],
+  ["07604", "Sheila Parthasarathy", "17.01.1966", "CIT", ""],
+  ["07104", "Mrinal Kumar Das", "26.06.1975", "CIT", ""],
+  ["07105", "Inder Solanki", "14.06.1977", "CIT", ""],
+  ["07106", "Pallavi", "07.02.1983", "CIT", ""],
+  ["07107", "Dhoke Ajay Gopalrao", "22.04.1978", "CIT", ""],
+  ["07109", "Parmar Alpeshkumar Trikamalal", "09.10.1976", "CIT", ""],
+  ["07610", "Shiva Srinivas", "07.07.1966", "CIT", ""],
+  ["07611", "T. M. Suganthamala", "20.06.1968", "CIT", ""],
+  ["07111", "Uma Shankar Prasad", "27.02.1977", "CIT", ""],
+  ["07112", "Mohit Mrinal", "01.10.1979", "CIT", ""],
+  ["07114", "Shashi Kajle", "04.02.1982", "CIT", ""],
+  ["07115", "Chanchal Meena", "15.08.1982", "CIT", ""],
+  ["07116", "Kranti", "05.05.1980", "CIT", ""],
+  ["07117", "Rintei Renthlei", "19.01.1981", "CIT", ""],
+  ["07118", "Prem Prakash Meena", "08.08.1978", "CIT", ""],
+  ["07119", "Vimal Kumar Meena", "10.08.1976", "CIT", ""],
+  ["07120", "M. C. Omi Ningshen", "23.08.1976", "CIT", ""],
+  ["07121", "Satya Pal Singh Meena", "25.09.1979", "CIT", ""],
+  ["07122", "Roshanta Kumari Meena", "30.06.1980", "CIT", ""],
+  ["07123", "Siddharth Bhim Singh Meena", "01.01.1980", "CIT", ""],
+  ["07124", "Kumar Avikal Manu", "04.11.1977", "CIT", ""],
+  ["07125", "Sumit Kaur", "19.02.1978", "CIT", ""],
+  ["07125A", "Jitender Singh", "10.03.1977", "CIT", ""],
+  ["07627-C", "Naresh Kumar Bansal", "10.05.1966", "CIT", ""],
+  ["07126", "Pooja Swaroop", "03.04.1979", "CIT", ""],
+];
+
+// ============== ENGINE ==============
+const STORAGE_PREFIX = CONFIG.storageKey || "portal_v2";
+const STORAGE_KEY_EDITS = STORAGE_PREFIX + "_edits";
+const STORAGE_KEY_NOTES = STORAGE_PREFIX + "_notes";
+const STORAGE_KEY_RC = STORAGE_PREFIX + "_runtime_config";
+const STORAGE_KEY_RD = STORAGE_PREFIX + "_runtime_data";
+const STORAGE_KEY_RP = STORAGE_PREFIX + "_runtime_pw";
+
+let edits = {}, notes = {};
+try { edits = JSON.parse(localStorage.getItem(STORAGE_KEY_EDITS) || "{}"); } catch(e) {}
+try { notes = JSON.parse(localStorage.getItem(STORAGE_KEY_NOTES) || "{}"); } catch(e) {}
+function saveEdits() { try { localStorage.setItem(STORAGE_KEY_EDITS, JSON.stringify(edits)); } catch(e){} }
+function saveNotes() { try { localStorage.setItem(STORAGE_KEY_NOTES, JSON.stringify(notes)); } catch(e){} }
+
+let LIVE_CONFIG = JSON.parse(JSON.stringify(CONFIG));
+let LIVE_RAW = RAW.slice();
+let LIVE_PASSWORD = CONFIG.adminPassword || "admin123";
+try { var rc = localStorage.getItem(STORAGE_KEY_RC); if (rc) LIVE_CONFIG = Object.assign({}, LIVE_CONFIG, JSON.parse(rc)); } catch(e) {}
+try { var rd = localStorage.getItem(STORAGE_KEY_RD); if (rd) LIVE_RAW = JSON.parse(rd); } catch(e) {}
+try { var rp = localStorage.getItem(STORAGE_KEY_RP); if (rp) LIVE_PASSWORD = rp; } catch(e) {}
+function saveRC() { try { localStorage.setItem(STORAGE_KEY_RC, JSON.stringify(LIVE_CONFIG)); } catch(e){} }
+function saveRD() { try { localStorage.setItem(STORAGE_KEY_RD, JSON.stringify(LIVE_RAW)); } catch(e){} }
+function saveRP(p) { try { localStorage.setItem(STORAGE_KEY_RP, p); } catch(e){} }
+
+function parseDOB(s) {
+  if (!s) return null;
+  if (s instanceof Date) return { d: s.getDate(), m: s.getMonth()+1, y: s.getFullYear() };
+  s = String(s).trim();
+  var m = s.match(/^(\d{1,2})[.\-\/](\d{1,2})[.\-\/](\d{4})$/);
+  if (m) return { d: +m[1], m: +m[2], y: +m[3] };
+  m = s.match(/^(\d{4})[\-\/](\d{1,2})[\-\/](\d{1,2})$/);
+  if (m) return { d: +m[3], m: +m[2], y: +m[1] };
+  return null;
+}
+function formatDOB(d) { if (!d) return ""; return String(d.d).padStart(2,"0")+"."+String(d.m).padStart(2,"0")+"."+d.y; }
+function lastDayOfMonth(y, m) { return new Date(y, m, 0).getDate(); }
+function retirementDate(dobStr) {
+  const dob = parseDOB(dobStr); if (!dob) return null;
+  const ry = dob.y + (LIVE_CONFIG.retirementAge || 60);
+  if (LIVE_CONFIG.retirementRule === "end_of_month_before") {
+    const m = dob.m === 1 ? 12 : dob.m - 1;
+    const y = dob.m === 1 ? ry - 1 : ry;
+    return new Date(y, m - 1, lastDayOfMonth(y, m));
+  }
+  if (LIVE_CONFIG.retirementRule === "exact_birthday") return new Date(ry, dob.m - 1, dob.d);
+  return new Date(ry, dob.m - 1, lastDayOfMonth(ry, dob.m));
+}
+function retirementStr(dobStr) {
+  const r = retirementDate(dobStr); if (!r) return "—";
+  return String(r.getDate()).padStart(2,"0")+"."+String(r.getMonth()+1).padStart(2,"0")+"."+r.getFullYear();
+}
+function batchFromCode(code) {
+  if (!code) return "—";
+  if (LIVE_CONFIG.batchDerivation === "none") return "—";
+  const cleaned = String(code).replace(/[^0-9]/g, "");
+  if (cleaned.length < 2) return "—";
+  const yy = cleaned.substring(0, 2);
+  const n = parseInt(yy, 10);
+  return n >= (LIVE_CONFIG.batchCutoff || 50) ? "19"+yy : "20"+yy;
+}
+function daysUntilRetirement(dobStr) {
+  const r = retirementDate(dobStr); if (!r) return null;
+  const today = new Date(); today.setHours(0,0,0,0);
+  return Math.round((r - today) / 86400000);
+}
+function getOfficers() {
+  return LIVE_RAW.map(function(row) {
+    const code = row[0], name = row[1], dob = row[2], grade = row[3], remarks = row[4];
+    const e = edits[code] || {};
+    return {
+      code: code, name: e.name != null ? e.name : name,
+      dob: e.dob != null ? e.dob : dob,
+      grade: e.grade != null ? e.grade : grade,
+      remarks: e.remarks != null ? e.remarks : remarks,
+      batch: batchFromCode(code),
+      retirement: retirementStr(e.dob != null ? e.dob : dob),
+      retirementDate: retirementDate(e.dob != null ? e.dob : dob),
+      daysToRetire: daysUntilRetirement(e.dob != null ? e.dob : dob),
+      note: notes[code] || "", edited: !!edits[code]
+    };
+  });
+}
+const TODAY = new Date(); TODAY.setHours(0,0,0,0);
+const THIS_YEAR = TODAY.getFullYear();
+const NEXT_YEAR = THIS_YEAR + 1;
+function escapeHtml(s) { if (s == null) return ""; return String(s).replace(/[&<>"']/g, function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+
+function levenshtein(a, b) {
+  a = a.toLowerCase(); b = b.toLowerCase();
+  const m = a.length, n = b.length;
+  if (!m) return n; if (!n) return m;
+  let prev = new Array(n+1).fill(0).map(function(_,i){return i;});
+  for (let i = 1; i <= m; i++) {
+    const cur = [i];
+    for (let j = 1; j <= n; j++) cur[j] = a[i-1] === b[j-1] ? prev[j-1] : Math.min(prev[j-1], prev[j], cur[j-1]) + 1;
+    prev = cur;
+  }
+  return prev[n];
+}
+function fuzzyScore(query, name) {
+  query = query.trim().toLowerCase(); name = String(name).toLowerCase();
+  if (!query) return 0;
+  if (name === query) return 1000;
+  if (name.indexOf(query) === 0) return 800 - (name.length - query.length);
+  if (name.indexOf(query) !== -1) return 600 - (name.length - query.length);
+  const tokens = name.split(/\s+/);
+  for (let i = 0; i < tokens.length; i++) {
+    if (tokens[i].indexOf(query) === 0) return 500;
+    if (tokens[i].indexOf(query) !== -1) return 400;
+  }
+  let best = 999;
+  for (let i = 0; i < tokens.length; i++) best = Math.min(best, levenshtein(query, tokens[i]));
+  return Math.max(0, 200 - best * 20);
+}
+
+function setView(view) {
+  document.querySelectorAll(".nav a").forEach(function(x){ x.classList.remove("active"); });
+  document.querySelectorAll('.nav a[data-view="'+view+'"]').forEach(function(x){ x.classList.add("active"); });
+  document.querySelectorAll(".view").forEach(function(v){ v.classList.remove("active"); });
+  const target = document.getElementById("view-" + view);
+  if (target) target.classList.add("active");
+  if (view === "dashboard") renderDashboard();
+  if (view === "full") renderFull();
+  if (view === "query") renderQuery();
+  if (view === "admin") renderAdmin();
+  document.getElementById("mobile-drawer").classList.remove("open");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+function bindNav() {
+  document.querySelectorAll(".nav a").forEach(function(a) {
+    a.addEventListener("click", function(e) { e.preventDefault(); setView(a.dataset.view); });
+  });
+}
+function toggleMobileMenu() { document.getElementById("mobile-drawer").classList.toggle("open"); }
+
+function gradeBadge(g) {
+  const ent = (LIVE_CONFIG.grades || []).find(function(x){return x.label === g;});
+  const sty = ent ? "background:" + (ent.bg||"#eee") + ";color:" + (ent.fg||"#333") + ";" : "";
+  return '<span class="badge" style="' + sty + '">' + escapeHtml(g) + '</span>';
+}
+function renderOfficerTable(officers) {
+  if (!officers.length) return '<div class="empty-state"><div class="ico">&empty;</div>No matches.</div>';
+  const idLabel = LIVE_CONFIG.idLabel || "Identifier";
+  const batchLabel = LIVE_CONFIG.batchLabel || "Batch";
+  const gradeLabel = LIVE_CONFIG.gradeLabel || "Grade";
+  const retLabel = LIVE_CONFIG.retirementLabel || "Retirement";
+  const rows = officers.map(function(o) {
+    const retired = o.daysToRetire !== null && o.daysToRetire < 0;
+    const soon = o.daysToRetire !== null && o.daysToRetire >= 0 && o.daysToRetire <= 90;
+    const retClass = retired ? "struck" : "";
+    let remarkBadge = o.remarks ? '<span class="badge badge-deputation">' + escapeHtml(o.remarks) + '</span>' : "";
+    let retiredBadge = retired ? '<span class="badge badge-retired">Retired</span>' : (soon ? '<span class="badge badge-soon">' + o.daysToRetire + 'd</span>' : "");
+    const editedFlag = o.edited ? ' <span style="color:var(--warn);font-size:0.7rem">&#9679;edited</span>' : '';
+    return '<tr onclick="showDetail(\'' + o.code + '\')" style="cursor:pointer">' +
+      '<td><strong>' + escapeHtml(o.name) + '</strong>' + editedFlag + '</td>' +
+      '<td>' + escapeHtml(o.code) + '</td>' +
+      '<td>' + gradeBadge(o.grade) + '</td>' +
+      '<td>' + escapeHtml(o.batch) + '</td>' +
+      '<td>' + escapeHtml(o.dob) + '</td>' +
+      '<td class="' + retClass + '">' + escapeHtml(o.retirement) + '</td>' +
+      '<td>' + remarkBadge + ' ' + retiredBadge + '</td></tr>';
+  }).join("");
+  return '<div class="table-wrap"><table class="officer-table"><thead><tr>' +
+    '<th>Name</th><th>' + escapeHtml(idLabel) + '</th><th>' + escapeHtml(gradeLabel) + '</th><th>' + escapeHtml(batchLabel) + '</th><th>DOB</th><th>' + escapeHtml(retLabel) + '</th><th>Status</th>' +
+    '</tr></thead><tbody>' + rows + '</tbody></table></div>';
+}
+
+function applyLiveConfigToUI() {
+  document.title = LIVE_CONFIG.portalTitle || "Officer Directory";
+  document.getElementById("dash-title").textContent = LIVE_CONFIG.portalTitle || "";
+  document.getElementById("dash-eyebrow").textContent = LIVE_CONFIG.eyebrow || "";
+  document.getElementById("dash-subtitle").innerHTML = LIVE_CONFIG.subtitle || "";
+  document.getElementById("sidebar-title").textContent = LIVE_CONFIG.shortTitle || LIVE_CONFIG.portalTitle || "";
+  document.getElementById("mobile-title").textContent = LIVE_CONFIG.shortTitle || LIVE_CONFIG.portalTitle || "";
+  document.getElementById("sidebar-tagline").textContent = LIVE_CONFIG.tagline || "";
+  document.getElementById("sidebar-source").innerHTML = LIVE_CONFIG.sourceNote || "";
+  const banner = document.getElementById("dashboard-banner");
+  if (LIVE_CONFIG.bannerHTML) { banner.innerHTML = LIVE_CONFIG.bannerHTML; banner.style.display = "block"; }
+  else banner.style.display = "none";
+  if (LIVE_CONFIG.batchLabel) document.getElementById("lbl-batch-filter").textContent = LIVE_CONFIG.batchLabel;
+  if (LIVE_CONFIG.gradeLabel) document.getElementById("lbl-grade-filter").textContent = LIVE_CONFIG.gradeLabel;
+  if (LIVE_CONFIG.lookupSubtitle) document.getElementById("lookup-subtitle").textContent = LIVE_CONFIG.lookupSubtitle;
+  if (LIVE_CONFIG.lookupPlaceholder) document.getElementById("lookup-input").placeholder = LIVE_CONFIG.lookupPlaceholder;
+}
+
+function renderDashboard() {
+  applyLiveConfigToUI();
+  const officers = getOfficers();
+  document.getElementById("stat-total").textContent = officers.length;
+  const inService = officers.filter(function(o){ return o.daysToRetire >= 0; });
+  document.getElementById("stat-total-detail").textContent = inService.length + " currently in service";
+  const yThis = officers.filter(function(o){ return o.retirementDate && o.retirementDate.getFullYear() === THIS_YEAR && o.retirementDate >= TODAY; });
+  const yThisAll = officers.filter(function(o){ return o.retirementDate && o.retirementDate.getFullYear() === THIS_YEAR; });
+  const yNext = officers.filter(function(o){ return o.retirementDate && o.retirementDate.getFullYear() === NEXT_YEAR; });
+  document.getElementById("stat-this-year").textContent = yThis.length;
+  document.getElementById("stat-this-year-detail").textContent = yThisAll.length + " total in " + THIS_YEAR;
+  document.getElementById("lbl-this-year").textContent = "Retiring in " + THIS_YEAR;
+  document.getElementById("stat-next-year").textContent = yNext.length;
+  document.getElementById("lbl-next-year").textContent = "Retiring in " + NEXT_YEAR;
+  const gradeGrid = document.getElementById("grade-grid");
+  const grades = LIVE_CONFIG.grades || [];
+  gradeGrid.innerHTML = grades.map(function(g) {
+    const count = officers.filter(function(o){return o.grade === g.label;}).length;
+    return '<div class="grade-card"><div class="label">' + escapeHtml(g.label) + '</div><div class="value">' + count + '</div></div>';
+  }).join("");
+  const sixMonthsOut = new Date(TODAY); sixMonthsOut.setMonth(sixMonthsOut.getMonth() + 6);
+  const upcoming = officers.filter(function(o){ return o.retirementDate && o.retirementDate >= TODAY && o.retirementDate <= sixMonthsOut; })
+    .sort(function(a, b){ return a.retirementDate - b.retirementDate; });
+  document.getElementById("upcoming-retirements").innerHTML = renderOfficerTable(upcoming);
+}
+
+function showDetail(code) { document.getElementById("lookup-input").value = code; setView("lookup"); runLookup(); }
+function renderDetailCard(o) {
+  const daysLine = o.daysToRetire >= 0 ? (o.daysToRetire + " days") : ("Already retired (" + Math.abs(o.daysToRetire) + " days ago)");
+  const idLabel = LIVE_CONFIG.idLabel || "Identifier";
+  const batchLabel = LIVE_CONFIG.batchLabel || "Batch";
+  return '<div class="detail-card">' +
+    '<h3>' + escapeHtml(o.name) + '</h3>' +
+    '<div class="sub">' + escapeHtml(o.grade) + ' &middot; ' + escapeHtml(idLabel) + ' ' + escapeHtml(o.code) + ' &middot; ' + escapeHtml(batchLabel) + ' ' + escapeHtml(o.batch) + '</div>' +
+    '<div class="detail-rows">' +
+      '<div class="detail-row"><span class="k">Date of birth</span><span class="v">' + escapeHtml(o.dob) + '</span></div>' +
+      '<div class="detail-row"><span class="k">Retirement date</span><span class="v">' + escapeHtml(o.retirement) + '</span></div>' +
+      '<div class="detail-row"><span class="k">Days to retirement</span><span class="v">' + daysLine + '</span></div>' +
+      '<div class="detail-row"><span class="k">Remarks</span><span class="v">' + escapeHtml(o.remarks || "—") + '</span></div>' +
+    '</div>' +
+    '<div class="notes-area"><label>Personal note</label>' +
+      '<textarea id="note-' + o.code + '" oninput="updateNote(\'' + o.code + '\')">' + escapeHtml(o.note || "") + '</textarea>' +
+    '</div>' +
+    '<div style="margin-top: 18px; display: flex; gap: 8px; flex-wrap: wrap;">' +
+      '<button class="button" onclick="editOfficer(\'' + o.code + '\')">Edit details</button>' +
+      (o.edited ? '<button class="button button-danger" onclick="resetOfficer(\'' + o.code + '\')">Reset edits</button>' : '') +
+    '</div></div>';
+}
+function updateNote(code) { const el = document.getElementById("note-" + code); if (!el) return; notes[code] = el.value; saveNotes(); }
+function editOfficer(code) {
+  const o = getOfficers().filter(function(x){return x.code===code;})[0]; if (!o) return;
+  const newName = prompt("Name:", o.name); if (newName === null) return;
+  const newDob = prompt("DOB (dd.mm.yyyy):", o.dob); if (newDob === null) return;
+  if (!parseDOB(newDob)) { alert("Invalid date. Use dd.mm.yyyy"); return; }
+  const newGrade = prompt("Grade:", o.grade); if (newGrade === null) return;
+  const newRemarks = prompt("Remarks:", o.remarks || ""); if (newRemarks === null) return;
+  edits[code] = { name: newName, dob: newDob, grade: newGrade, remarks: newRemarks };
+  saveEdits(); runLookup();
+}
+function resetOfficer(code) { if (!confirm("Reset edits?")) return; delete edits[code]; saveEdits(); runLookup(); }
+
+function runLookup() {
+  const q = document.getElementById("lookup-input").value.trim();
+  const container = document.getElementById("lookup-results");
+  const officers = getOfficers();
+  if (!q) { container.innerHTML = '<div class="empty-state"><div class="ico">&#9906;</div>Type a name or ' + (LIVE_CONFIG.idLabel||"identifier").toLowerCase() + '.</div>'; return; }
+  const exactCode = officers.filter(function(o){return String(o.code).toLowerCase()===q.toLowerCase();})[0];
+  const codeContains = officers.filter(function(o){return String(o.code).toLowerCase().indexOf(q.toLowerCase())!==-1 && String(o.code).toLowerCase()!==q.toLowerCase();});
+  const scored = officers.map(function(o){return {o:o, s:fuzzyScore(q, o.name)};})
+    .filter(function(x){return x.s>0 && String(x.o.code).toLowerCase()!==q.toLowerCase();})
+    .sort(function(a,b){return b.s - a.s;}).slice(0,15);
+  let html = "";
+  if (exactCode) html += renderDetailCard(exactCode);
+  if (codeContains.length) html += '<div class="section-heading">' + escapeHtml(LIVE_CONFIG.idLabel||"ID") + ' matches</div>' + renderOfficerTable(codeContains);
+  if (scored.length) html += '<div class="section-heading">Name matches</div>' + renderOfficerTable(scored.map(function(x){return x.o;}));
+  if (!exactCode && !codeContains.length && !scored.length) html = '<div class="empty-state"><div class="ico">&empty;</div>No matches.</div>';
+  container.innerHTML = html;
+}
+
+function populateBatches() {
+  const batches = Array.from(new Set(getOfficers().map(function(o){return o.batch;}))).sort();
+  document.getElementById("batch-select").innerHTML = batches.map(function(b){return '<option value="'+b+'">'+b+'</option>';}).join("");
+}
+function populateGradeChips() {
+  const c = document.getElementById("grade-chips");
+  c.innerHTML = (LIVE_CONFIG.grades || []).map(function(g){return '<button class="chip" data-grade="'+escapeHtml(g.label)+'">'+escapeHtml(g.label)+'</button>';}).join("");
+  c.querySelectorAll(".chip").forEach(function(ch){ ch.addEventListener("click", function(){ ch.classList.toggle("active"); }); });
+}
+function populatePresetChips() {
+  document.getElementById("preset-chips").innerHTML =
+    '<button class="chip" onclick="applyPreset(\'this-year\')">Retiring '+THIS_YEAR+'</button>' +
+    '<button class="chip" onclick="applyPreset(\'next-year\')">Retiring '+NEXT_YEAR+'</button>' +
+    '<button class="chip" onclick="applyPreset(\'next-6mo\')">Next 6 months</button>' +
+    '<button class="chip" onclick="applyPreset(\'deputation\')">On deputation</button>' +
+    '<button class="chip" onclick="applyPreset(\'clear\')">Clear all</button>';
+}
+function populateFullGradeFilter() {
+  document.getElementById("full-grade-filter").innerHTML = '<option value="">All grades</option>' + (LIVE_CONFIG.grades||[]).map(function(g){return '<option>'+escapeHtml(g.label)+'</option>';}).join("");
+}
+function getQueryState() {
+  return {
+    grades: Array.from(document.querySelectorAll("#grade-chips .chip.active")).map(function(c){return c.dataset.grade;}),
+    batches: Array.from(document.getElementById("batch-select").selectedOptions).map(function(o){return o.value;}),
+    from: document.getElementById("ret-from").value, to: document.getElementById("ret-to").value,
+    dobMonth: document.getElementById("dob-month").value,
+    nameContains: document.getElementById("name-contains").value.trim().toLowerCase(),
+    depOnly: !!window.__depOnly
+  };
+}
+function applyQuery() {
+  const s = getQueryState();
+  return getOfficers().filter(function(o) {
+    if (s.grades.length && s.grades.indexOf(o.grade) === -1) return false;
+    if (s.batches.length && s.batches.indexOf(o.batch) === -1) return false;
+    if (s.dobMonth) { const d = parseDOB(o.dob); if (!d || d.m !== +s.dobMonth) return false; }
+    if (s.nameContains && String(o.name).toLowerCase().indexOf(s.nameContains) === -1) return false;
+    if (s.from) { const p = s.from.split("-").map(Number); if (!o.retirementDate || o.retirementDate < new Date(p[0], p[1]-1, 1)) return false; }
+    if (s.to) { const p = s.to.split("-").map(Number); if (!o.retirementDate || o.retirementDate > new Date(p[0], p[1], 0)) return false; }
+    if (s.depOnly && (String(o.remarks)||"").toLowerCase().indexOf("deputation") === -1) return false;
+    return true;
+  }).sort(function(a,b){ if (!a.retirementDate) return 1; if (!b.retirementDate) return -1; return a.retirementDate - b.retirementDate; });
+}
+function runQuery() {
+  const r = applyQuery();
+  document.getElementById("query-count").textContent = r.length + " officer" + (r.length===1?"":"s") + " match";
+  document.getElementById("query-results").innerHTML = renderOfficerTable(r);
+}
+function renderQuery() {
+  populateBatches(); populateGradeChips();
+  if (!document.getElementById("query-results").innerHTML) {
+    document.getElementById("query-results").innerHTML = '<div class="empty-state"><div class="ico">&#8801;</div>Set filters and tap <strong>Apply filters</strong>.</div>';
+  }
+}
+function applyPreset(p) {
+  document.querySelectorAll("#grade-chips .chip").forEach(function(c){c.classList.remove("active");});
+  Array.from(document.getElementById("batch-select").options).forEach(function(o){o.selected=false;});
+  document.getElementById("ret-from").value = ""; document.getElementById("ret-to").value = "";
+  document.getElementById("dob-month").value = ""; document.getElementById("name-contains").value = "";
+  window.__depOnly = false;
+  if (p === "this-year") { document.getElementById("ret-from").value = THIS_YEAR+"-01"; document.getElementById("ret-to").value = THIS_YEAR+"-12"; }
+  else if (p === "next-year") { document.getElementById("ret-from").value = NEXT_YEAR+"-01"; document.getElementById("ret-to").value = NEXT_YEAR+"-12"; }
+  else if (p === "next-6mo") {
+    const d = new Date();
+    document.getElementById("ret-from").value = d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
+    d.setMonth(d.getMonth() + 6);
+    document.getElementById("ret-to").value = d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
+  }
+  else if (p === "deputation") window.__depOnly = true;
+  runQuery();
+}
+
+let fullSortKey = "code", fullSortAsc = true;
+function renderFull() {
+  populateFullGradeFilter();
+  const q = document.getElementById("full-search").value.trim().toLowerCase();
+  const gf = document.getElementById("full-grade-filter").value;
+  let f = getOfficers().filter(function(o) {
+    if (gf && o.grade !== gf) return false;
+    if (!q) return true;
+    return String(o.name).toLowerCase().indexOf(q)!==-1 || String(o.code).toLowerCase().indexOf(q)!==-1 || String(o.batch).indexOf(q)!==-1;
+  });
+  f.sort(function(a, b) {
+    let av = a[fullSortKey], bv = b[fullSortKey];
+    if (fullSortKey === "retirement") { av = a.retirementDate || new Date(9999,0,1); bv = b.retirementDate || new Date(9999,0,1); }
+    if (av < bv) return fullSortAsc ? -1 : 1;
+    if (av > bv) return fullSortAsc ? 1 : -1;
+    return 0;
+  });
+  document.getElementById("full-count").textContent = f.length + " officer" + (f.length===1?"":"s") + " shown";
+  document.getElementById("full-results").innerHTML = renderOfficerTable(f);
+}
+
+function rowsForExport(officers) {
+  const idL = LIVE_CONFIG.idLabel || "Identifier", batchL = LIVE_CONFIG.batchLabel || "Batch", gradeL = LIVE_CONFIG.gradeLabel || "Grade", retL = LIVE_CONFIG.retirementLabel || "Retirement Date";
+  return officers.map(function(o) {
+    var r = {}; r[idL] = o.code; r["Name"] = o.name; r[gradeL] = o.grade; r[batchL] = o.batch; r["DOB"] = o.dob; r[retL] = o.retirement; r["Remarks"] = o.remarks; r["Note"] = o.note;
+    return r;
+  });
+}
+function downloadCSV(rows, name) {
+  if (!rows.length) { alert("Nothing to export."); return; }
+  const cols = Object.keys(rows[0]);
+  const csv = [cols.join(",")].concat(rows.map(function(r){
+    return cols.map(function(c){ const v = (r[c] == null ? "" : r[c]).toString().replace(/"/g,'""'); return /[",\n]/.test(v) ? '"'+v+'"' : v; }).join(",");
+  })).join("\n");
+  const blob = new Blob([csv], {type:"text/csv"}); const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+function downloadXLSX(rows, name, sheetName) {
+  if (typeof XLSX === "undefined") { alert("Excel library not loaded yet."); return; }
+  if (!rows.length) { alert("Nothing to export."); return; }
+  const ws = XLSX.utils.json_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, sheetName || "Officers");
+  XLSX.writeFile(wb, name);
+}
+function fp() { return LIVE_CONFIG.exportFilePrefix || "officers"; }
+function exportQueryCSV() { downloadCSV(rowsForExport(applyQuery()), fp()+"_query.csv"); }
+function exportQueryXLSX() { downloadXLSX(rowsForExport(applyQuery()), fp()+"_query.xlsx", "Query"); }
+function exportFullCSV() {
+  const q = document.getElementById("full-search").value.trim().toLowerCase();
+  const gf = document.getElementById("full-grade-filter").value;
+  const fil = getOfficers().filter(function(o){return (!gf||o.grade===gf) && (!q||String(o.name).toLowerCase().indexOf(q)!==-1||String(o.code).toLowerCase().indexOf(q)!==-1||String(o.batch).indexOf(q)!==-1);});
+  downloadCSV(rowsForExport(fil), fp()+"_full.csv");
+}
+function exportFullXLSX() {
+  const q = document.getElementById("full-search").value.trim().toLowerCase();
+  const gf = document.getElementById("full-grade-filter").value;
+  const fil = getOfficers().filter(function(o){return (!gf||o.grade===gf) && (!q||String(o.name).toLowerCase().indexOf(q)!==-1||String(o.code).toLowerCase().indexOf(q)!==-1||String(o.batch).indexOf(q)!==-1);});
+  downloadXLSX(rowsForExport(fil), fp()+"_full.xlsx", "Full");
+}
+
+// === ADMIN ===
+let ADMIN_AUTHED = false;
+function renderAdmin() {
+  if (ADMIN_AUTHED) {
+    document.getElementById("admin-login").style.display = "none";
+    document.getElementById("admin-content").style.display = "block";
+    setSubtab("settings"); populateSettingsForm(); updateAdminLockIcon();
+  } else {
+    document.getElementById("admin-login").style.display = "block";
+    document.getElementById("admin-content").style.display = "none";
+    setTimeout(function(){ var i = document.getElementById("admin-pw-input"); if (i) i.focus(); }, 100);
+    updateAdminLockIcon();
+  }
+}
+function updateAdminLockIcon() {
+  var icon = ADMIN_AUTHED ? "&#128275;" : "&#128274;";
+  var d = document.getElementById("admin-lock-desk"); if (d) d.innerHTML = icon;
+  var m = document.getElementById("admin-lock-mob"); if (m) m.innerHTML = icon;
+}
+function adminLogin() {
+  const input = document.getElementById("admin-pw-input").value;
+  const errBox = document.getElementById("admin-login-err");
+  if (input === LIVE_PASSWORD) {
+    ADMIN_AUTHED = true; errBox.style.display = "none";
+    document.getElementById("admin-pw-input").value = "";
+    renderAdmin();
+  } else { errBox.textContent = "Incorrect passcode."; errBox.style.display = "block"; }
+}
+function adminLogout() { ADMIN_AUTHED = false; renderAdmin(); }
+function setSubtab(name) {
+  document.querySelectorAll(".subtab[data-subtab]").forEach(function(t){ t.classList.toggle("active", t.dataset.subtab === name); });
+  document.querySelectorAll(".subview").forEach(function(v){ v.classList.remove("active"); });
+  const el = document.getElementById("sub-" + name);
+  if (el) el.classList.add("active");
+  if (name === "publish") refreshPublishPreview();
+}
+
+function populateSettingsForm() {
+  ["portalTitle","shortTitle","tagline","eyebrow","subtitle","sourceNote","bannerHTML",
+   "idLabel","batchLabel","gradeLabel","retirementAge","retirementRule","batchDerivation"].forEach(function(k){
+    const el = document.getElementById("cf-" + k);
+    if (el) el.value = LIVE_CONFIG[k] != null ? LIVE_CONFIG[k] : "";
+  });
+  renderGradeEditor();
+}
+function renderGradeEditor() {
+  const c = document.getElementById("grade-editor");
+  const grades = LIVE_CONFIG.grades || [];
+  c.innerHTML = grades.map(function(g, i) {
+    return '<div class="grade-row">' +
+      '<input type="text" value="' + escapeHtml(g.label) + '" oninput="editGrade(' + i + ', \'label\', this.value)">' +
+      '<input type="color" value="' + (g.bg || "#dce8f6") + '" oninput="editGrade(' + i + ', \'bg\', this.value)">' +
+      '<input type="color" value="' + (g.fg || "#113a62") + '" oninput="editGrade(' + i + ', \'fg\', this.value)">' +
+      '<button class="button gr-btn" onclick="removeGrade(' + i + ')">&times;</button>' +
+    '</div>';
+  }).join("");
+  if (!grades.length) c.innerHTML = '<div class="empty-state" style="padding:20px;">No grades. Click "+ Add Grade".</div>';
+}
+function editGrade(idx, field, value) {
+  if (!LIVE_CONFIG.grades) LIVE_CONFIG.grades = [];
+  if (!LIVE_CONFIG.grades[idx]) return;
+  LIVE_CONFIG.grades[idx][field] = value;
+}
+function addGrade() {
+  if (!LIVE_CONFIG.grades) LIVE_CONFIG.grades = [];
+  LIVE_CONFIG.grades.push({ label: "New Grade", bg: "#e8edf3", fg: "#122033" });
+  renderGradeEditor();
+}
+function removeGrade(idx) {
+  if (!confirm("Remove this grade?")) return;
+  LIVE_CONFIG.grades.splice(idx, 1);
+  renderGradeEditor();
+}
+function saveSettings() {
+  ["portalTitle","shortTitle","tagline","eyebrow","subtitle","sourceNote","bannerHTML",
+   "idLabel","batchLabel","gradeLabel","retirementRule","batchDerivation"].forEach(function(k){
+    const el = document.getElementById("cf-" + k);
+    if (el) LIVE_CONFIG[k] = el.value;
+  });
+  const ageEl = document.getElementById("cf-retirementAge");
+  if (ageEl) LIVE_CONFIG.retirementAge = parseInt(ageEl.value, 10);
+  saveRC();
+  applyLiveConfigToUI();
+  populateGradeChips();
+  populateFullGradeFilter();
+  showStatus("settings-status", "Settings applied. Go to Publish to download an updated portal file.", "success");
+}
+function resetSettingsForm() {
+  if (!confirm("Revert to the original baked-in settings?")) return;
+  LIVE_CONFIG = JSON.parse(JSON.stringify(CONFIG));
+  try { localStorage.removeItem(STORAGE_KEY_RC); } catch(e) {}
+  populateSettingsForm(); applyLiveConfigToUI();
+  populateGradeChips(); populateFullGradeFilter();
+  showStatus("settings-status", "Reverted.", "success");
+}
+
+let UPLOAD_JSON = null;
+function handleFile(evt) {
+  const file = evt.target.files && evt.target.files[0]; if (!file) return;
+  if (typeof XLSX === "undefined") {
+    document.getElementById("upload-result").innerHTML = '<div class="banner danger">Excel library not loaded. Please refresh.</div>'; return;
+  }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = new Uint8Array(e.target.result);
+      const wb = XLSX.read(data, { type: "array", cellDates: true });
+      const sheet = wb.Sheets[wb.SheetNames[0]];
+      const json = XLSX.utils.sheet_to_json(sheet, { defval: "", raw: false });
+      if (!json.length) { document.getElementById("upload-result").innerHTML = '<div class="banner danger">File is empty.</div>'; return; }
+      showFieldMapping(json);
+    } catch (err) {
+      document.getElementById("upload-result").innerHTML = '<div class="banner danger">Could not read: ' + escapeHtml(err.message) + '</div>';
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+function showFieldMapping(json) {
+  UPLOAD_JSON = json;
+  const cols = Object.keys(json[0]);
+  function guess(candidates) {
+    for (var i = 0; i < cols.length; i++) {
+      var c = cols[i].toLowerCase();
+      for (var j = 0; j < candidates.length; j++) if (c.indexOf(candidates[j]) !== -1) return cols[i];
+    }
+    return cols[0];
+  }
+  const g = {
+    id: guess(["civil code", "code", "cadre", "identifier", "pf", "service no"]),
+    name: guess(["name", "officer"]),
+    dob: guess(["dob", "birth"]),
+    grade: guess(["grade", "designation", "rank", "level", "post"]),
+    remarks: guess(["remarks", "remark", "notes", "deputation", "status"]),
+  };
+  const opts = function(sel) { return cols.map(function(c){ return '<option value="' + escapeHtml(c) + '"' + (c===sel?' selected':'') + '>' + escapeHtml(c) + '</option>'; }).join(""); };
+  const optsN = function(sel) { return '<option value="">— (leave blank) —</option>' + cols.map(function(c){ return '<option value="' + escapeHtml(c) + '"' + (c===sel?' selected':'') + '>' + escapeHtml(c) + '</option>'; }).join(""); };
+  document.getElementById("upload-result").innerHTML =
+    '<div class="banner success">Parsed: ' + json.length + ' rows, ' + cols.length + ' columns. Map your columns:</div>' +
+    '<div class="field-map-grid">' +
+      '<div class="field-map-row"><div class="lbl">Identifier column:</div><select id="map-id">' + opts(g.id) + '</select></div>' +
+      '<div class="field-map-row"><div class="lbl">Name column:</div><select id="map-name">' + opts(g.name) + '</select></div>' +
+      '<div class="field-map-row"><div class="lbl">DOB column:</div><select id="map-dob">' + opts(g.dob) + '</select></div>' +
+      '<div class="field-map-row"><div class="lbl">Grade column:</div><select id="map-grade">' + opts(g.grade) + '</select></div>' +
+      '<div class="field-map-row"><div class="lbl">Remarks (optional):</div><select id="map-remarks">' + optsN(g.remarks) + '</select></div>' +
+    '</div>' +
+    '<div class="actions-bar">' +
+      '<button class="button button-primary" onclick="previewMapping()">Preview & Validate</button>' +
+      '<button class="button" onclick="document.getElementById(\'upload-result\').innerHTML=\'\'; UPLOAD_JSON=null;">Cancel</button>' +
+    '</div><div id="upload-preview"></div>';
+}
+function previewMapping() {
+  if (!UPLOAD_JSON) return;
+  const mId = document.getElementById("map-id").value;
+  const mName = document.getElementById("map-name").value;
+  const mDob = document.getElementById("map-dob").value;
+  const mGrade = document.getElementById("map-grade").value;
+  const mRem = document.getElementById("map-remarks").value;
+  const knownGrades = (LIVE_CONFIG.grades || []).map(function(x){return x.label;});
+  const newData = [], errors = [];
+  UPLOAD_JSON.forEach(function(row, i) {
+    const rn = i + 2;
+    const code = String(row[mId] || "").trim();
+    const name = String(row[mName] || "").trim();
+    const dobRaw = row[mDob];
+    const grade = String(row[mGrade] || "").trim();
+    const remarks = mRem ? String(row[mRem] || "").trim() : "";
+    if (!code) { errors.push("Row "+rn+": missing identifier"); return; }
+    if (!name) { errors.push("Row "+rn+": missing name"); return; }
+    var dobP = dobRaw instanceof Date ? { d: dobRaw.getDate(), m: dobRaw.getMonth()+1, y: dobRaw.getFullYear() } : parseDOB(dobRaw);
+    if (!dobP) { errors.push("Row "+rn+" ("+name+"): unparseable DOB '"+dobRaw+"'"); return; }
+    if (!grade) { errors.push("Row "+rn+" ("+name+"): missing grade"); return; }
+    if (knownGrades.length && knownGrades.indexOf(grade) === -1) errors.push("Row "+rn+" ("+name+"): grade '"+grade+"' not in CONFIG grades");
+    newData.push([code, name, formatDOB(dobP), grade, remarks]);
+  });
+  let html = "";
+  if (errors.length) html += '<div class="banner danger"><strong>'+errors.length+' issue'+(errors.length===1?"":"s")+':</strong><br>'+errors.slice(0,10).map(escapeHtml).join("<br>")+(errors.length>10?'<br>...and '+(errors.length-10)+' more.':'')+'</div>';
+  else html += '<div class="banner success">All '+newData.length+' rows parsed cleanly.</div>';
+  html += '<div class="preview-table"><table><thead><tr><th>'+escapeHtml(LIVE_CONFIG.idLabel||"ID")+'</th><th>Name</th><th>DOB</th><th>Grade</th><th>Remarks</th></tr></thead><tbody>';
+  newData.slice(0, 50).forEach(function(r) { html += '<tr><td>'+escapeHtml(r[0])+'</td><td>'+escapeHtml(r[1])+'</td><td>'+escapeHtml(r[2])+'</td><td>'+escapeHtml(r[3])+'</td><td>'+escapeHtml(r[4])+'</td></tr>'; });
+  html += '</tbody></table></div>';
+  if (newData.length > 50) html += '<div style="color:var(--muted); font-size:0.85rem;">First 50 of '+newData.length+'.</div>';
+  html += '<div class="actions-bar"><button class="button button-success" onclick="confirmDataReplace()">Replace dataset with '+newData.length+' rows</button> <button class="button" onclick="document.getElementById(\'upload-preview\').innerHTML=\'\';">Cancel</button></div>';
+  window.__pendingUpload = newData;
+  document.getElementById("upload-preview").innerHTML = html;
+}
+function confirmDataReplace() {
+  if (!window.__pendingUpload) return;
+  if (!confirm("Replace the entire dataset ("+LIVE_RAW.length+" officers) with "+window.__pendingUpload.length+" new rows?")) return;
+  LIVE_RAW = window.__pendingUpload; saveRD();
+  window.__pendingUpload = null; UPLOAD_JSON = null;
+  document.getElementById("upload-result").innerHTML = '<div class="banner success">Dataset replaced. Go to Publish to download an updated portal file.</div>';
+}
+
+function changePassword() {
+  const cur = document.getElementById("cf-pw-current").value;
+  const nw = document.getElementById("cf-pw-new").value;
+  const cf = document.getElementById("cf-pw-confirm").value;
+  if (cur !== LIVE_PASSWORD) { showStatus("pw-status", "Current passcode is incorrect.", "danger"); return; }
+  if (!nw) { showStatus("pw-status", "New passcode cannot be empty.", "danger"); return; }
+  if (nw !== cf) { showStatus("pw-status", "Confirmation does not match.", "danger"); return; }
+  LIVE_PASSWORD = nw; saveRP(nw);
+  document.getElementById("cf-pw-current").value = "";
+  document.getElementById("cf-pw-new").value = "";
+  document.getElementById("cf-pw-confirm").value = "";
+  showStatus("pw-status", "Passcode changed. Go to Publish to make permanent.", "success");
+}
+
+function refreshPublishPreview() {
+  const c = document.getElementById("publish-preview");
+  c.innerHTML = [
+    "<strong>Portal title:</strong> " + escapeHtml(LIVE_CONFIG.portalTitle || ""),
+    "<strong>Identifier label:</strong> " + escapeHtml(LIVE_CONFIG.idLabel || ""),
+    "<strong>Retirement age:</strong> " + (LIVE_CONFIG.retirementAge || 60),
+    "<strong>Grades:</strong> " + ((LIVE_CONFIG.grades||[]).map(function(g){return escapeHtml(g.label);}).join(", ") || "(none)"),
+    "<strong>Officers in dataset:</strong> " + LIVE_RAW.length,
+    "<strong>Admin passcode:</strong> " + (LIVE_PASSWORD === "admin123" ? "<span style='color:var(--warn)'>admin123 (default — change recommended)</span>" : "(custom)"),
+  ].join("<br>");
+  const dn = document.getElementById("cf-downloadName");
+  if (!dn.value) dn.value = (LIVE_CONFIG.exportFilePrefix || "portal").toLowerCase().replace(/\s+/g,'_') + "_updated.html";
+}
+function copyConfigToClipboard() {
+  const obj = { CONFIG: LIVE_CONFIG, password: LIVE_PASSWORD, officerCount: LIVE_RAW.length };
+  navigator.clipboard.writeText(JSON.stringify(obj, null, 2)).then(function(){
+    showStatus("publish-status", "Settings copied to clipboard.", "success");
+  });
+}
+function downloadUpdatedHTML() {
+  const fname = document.getElementById("cf-downloadName").value || "portal_updated.html";
+  fetch(window.location.href).then(function(r){ return r.text(); }).then(function(src) { bakeAndDownload(src, fname); })
+  .catch(function(){ bakeAndDownload("<!DOCTYPE html>\n" + document.documentElement.outerHTML, fname); });
+}
+function bakeAndDownload(src, fname) {
+  const cfg = Object.assign({}, LIVE_CONFIG); cfg.adminPassword = LIVE_PASSWORD;
+  const configJSON = "const CONFIG = " + JSON.stringify(cfg, null, 2) + ";";
+  src = src.replace(/const CONFIG = \{[\s\S]*?\n\};/, configJSON);
+  const rawJSON = "const RAW = " + JSON.stringify(LIVE_RAW, null, 2) + ";";
+  src = src.replace(/const RAW = \[[\s\S]*?\n\];/, rawJSON);
+  const blob = new Blob([src], { type: "text/html" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = fname;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  showStatus("publish-status", "Downloaded: " + fname + " (" + Math.round(blob.size/1024) + " KB)", "success");
+}
+
+function showStatus(id, msg, kind) {
+  const el = document.getElementById(id); if (!el) return;
+  el.innerHTML = '<div class="banner ' + (kind||"") + '">' + escapeHtml(msg) + '</div>';
+  setTimeout(function(){ if (el.innerHTML.indexOf(msg) !== -1) el.innerHTML = ""; }, 8000);
+}
+
+function boot() {
+  applyLiveConfigToUI();
+  populateGradeChips(); populatePresetChips(); populateFullGradeFilter();
+  bindNav();
+  document.getElementById("lookup-input").addEventListener("input", runLookup);
+  document.getElementById("full-search").addEventListener("input", renderFull);
+  document.getElementById("full-grade-filter").addEventListener("change", renderFull);
+  const uz = document.getElementById("upload-zone");
+  if (uz) {
+    uz.addEventListener("dragover", function(e){ e.preventDefault(); uz.classList.add("dragover"); });
+    uz.addEventListener("dragleave", function(){ uz.classList.remove("dragover"); });
+    uz.addEventListener("drop", function(e){
+      e.preventDefault(); uz.classList.remove("dragover");
+      const f = e.dataTransfer.files[0];
+      if (f) { document.getElementById("file-input").files = e.dataTransfer.files; handleFile({ target: { files: [f] } }); }
+    });
+  }
+  renderDashboard();
+}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+else boot();
+</script>
+</body>
+</html>
