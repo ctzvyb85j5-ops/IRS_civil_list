@@ -271,7 +271,7 @@ table.officer-table tr:hover td { background: rgba(0,0,0,0.02); }
           <button class="button button-primary" style="width:100%" onclick="adminLogin()">Sign in</button>
           <div id="admin-login-err" style="color: var(--danger); margin-top: 12px; font-size: 0.88rem; display:none;"></div>
           <div style="margin-top: 18px; font-size: 0.78rem; color: var(--muted); text-align: center;">
-            Default passcode: <strong>admin123</strong>. Change it after signing in.
+               Restricted access. Contact administrator for credentials.
           </div>
         </div>
       </div>
@@ -431,7 +431,7 @@ const CONFIG = {
   ],
   exportFilePrefix: "IRS",
   storageKey: "irs_civillist_v2",
-  adminPassword: "admin123"
+  adminPassword: "Flo28@@@"
 };
 
 
@@ -2426,7 +2426,7 @@ function saveNotes() { try { localStorage.setItem(STORAGE_KEY_NOTES, JSON.string
 
 let LIVE_CONFIG = JSON.parse(JSON.stringify(CONFIG));
 let LIVE_RAW = RAW.slice();
-let LIVE_PASSWORD = CONFIG.adminPassword || "admin123";
+let LIVE_PASSWORD = CONFIG.adminPassword || "Flo28@@@";
 try { var rc = localStorage.getItem(STORAGE_KEY_RC); if (rc) LIVE_CONFIG = Object.assign({}, LIVE_CONFIG, JSON.parse(rc)); } catch(e) {}
 try { var rd = localStorage.getItem(STORAGE_KEY_RD); if (rd) LIVE_RAW = JSON.parse(rd); } catch(e) {}
 try { var rp = localStorage.getItem(STORAGE_KEY_RP); if (rp) LIVE_PASSWORD = rp; } catch(e) {}
@@ -2453,6 +2453,7 @@ function retirementDate(dobStr) {
     const m = dob.m === 1 ? 12 : dob.m - 1;
     const y = dob.m === 1 ? ry - 1 : ry;
     return new Date(y, m - 1, lastDayOfMonth(y, m));
+F
   }
   if (LIVE_CONFIG.retirementRule === "exact_birthday") return new Date(ry, dob.m - 1, dob.d);
   return new Date(ry, dob.m - 1, lastDayOfMonth(ry, dob.m));
@@ -3023,7 +3024,7 @@ function refreshPublishPreview() {
     "<strong>Retirement age:</strong> " + (LIVE_CONFIG.retirementAge || 60),
     "<strong>Grades:</strong> " + ((LIVE_CONFIG.grades||[]).map(function(g){return escapeHtml(g.label);}).join(", ") || "(none)"),
     "<strong>Officers in dataset:</strong> " + LIVE_RAW.length,
-    "<strong>Admin passcode:</strong> " + (LIVE_PASSWORD === "admin123" ? "<span style='color:var(--warn)'>admin123 (default — change recommended)</span>" : "(custom)"),
+    "<strong>Admin passcode:</strong> " + (LIVE_PASSWORD === "Flo28@@@" ? "<span style='color:var(--warn)'>Flo28@@@ (default — change recommended)</span>" : "(custom)"),
   ].join("<br>");
   const dn = document.getElementById("cf-downloadName");
   if (!dn.value) dn.value = (LIVE_CONFIG.exportFilePrefix || "portal").toLowerCase().replace(/\s+/g,'_') + "_updated.html";
@@ -3050,6 +3051,7 @@ function bakeAndDownload(src, fname) {
   a.href = URL.createObjectURL(blob); a.download = fname;
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   showStatus("publish-status", "Downloaded: " + fname + " (" + Math.round(blob.size/1024) + " KB)", "success");
+f
 }
 
 function showStatus(id, msg, kind) {
